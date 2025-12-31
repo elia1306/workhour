@@ -65,7 +65,7 @@
         .cal-cell { 
             padding: 10px 2px; font-size: 0.9em; border-radius: 12px; position: relative; cursor: pointer;
         }
-        .cal-cell:hover { background-color: #FFF0F5; } /* 移除 transform scale */
+        .cal-cell:hover { background-color: #FFF0F5; }
         
         .is-holiday { color: var(--holiday); font-weight: bold; }
         .is-holiday::after { content: '★'; font-size: 0.6em; display: block; margin-top: 2px; color: var(--holiday); }
@@ -97,7 +97,7 @@
             display: inline-flex; align-items: center; gap: 8px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
-        .btn-google:hover { border-color: var(--primary); color: var(--primary); } /* 移除 transform translateY */
+        .btn-google:hover { border-color: var(--primary); color: var(--primary); }
         .btn-google img { width: 18px; height: 18px; }
 
         /* 表格樣式優化 */
@@ -108,18 +108,15 @@
             border-bottom: 2px solid var(--border);
         }
 
-        /* 每一行變成一個小卡片 */
         tbody tr { 
             background: white; 
             box-shadow: 0 2px 5px rgba(0,0,0,0.02);
         }
-        /* 移除 tbody tr:hover 的 transform scale */
 
         td { padding: 12px 5px; text-align: center; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
         td:first-child { border-left: 1px solid var(--border); border-radius: 12px 0 0 12px; }
         td:last-child { border-right: 1px solid var(--border); border-radius: 0 12px 12px 0; }
 
-        /* 日期並排樣式 */
         .date-wrapper {
             display: flex; align-items: center; justify-content: flex-start; gap: 8px; padding-left: 10px;
         }
@@ -132,6 +129,15 @@
         tr.mode-leave td { background-color: #F0FFF4; border-color: #d6ffe0; }
         
         input { font-family: inherit; }
+        
+        /* 增加：Disabled 狀態的統一樣式 */
+        input:disabled {
+            background-color: transparent !important;
+            opacity: 0.3;
+            cursor: not-allowed;
+            color: #aaa;
+        }
+
         input[type="time"] { 
             padding: 6px; border: 1px solid #ddd; border-radius: 10px; width: 90px; 
             text-align: center; background: #fdfdfd; color: var(--text);
@@ -146,7 +152,6 @@
         input[type="checkbox"]:checked { background-color: var(--holiday); border-color: var(--holiday); }
         input[type="checkbox"]:checked::after { content: '✔'; color: white; position: absolute; left: 3px; top: -1px; font-size: 14px;}
 
-        /* 底部統計 (馬卡龍色塊) */
         .summary {
             display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 20px;
         }
@@ -330,7 +335,6 @@
             const tr = document.createElement('tr');
             tr.dataset.date = iso;
             
-            // --- 更新：日期與星期並排 ---
             let dateHTML = `
                 <div class="date-wrapper">
                     <span class="date-main">${iso.slice(5)}</span>
@@ -377,11 +381,10 @@
                 tr.classList.add('mode-holiday');
                 dayMins = 480; 
                 res.textContent = "8H";
+                // 修正：僅設定屬性，外觀由 CSS input:disabled 控制
                 inps.forEach(k => k.disabled = true);
-                tr.querySelector('.inp-s').style.opacity = 0.3;
             } else {
                 inps.forEach(k => k.disabled = false);
-                tr.querySelector('.inp-s').style.opacity = 1;
                 
                 if (l > 0) tr.classList.add('mode-leave');
 
