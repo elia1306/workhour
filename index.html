@@ -12,10 +12,12 @@
             --accent: #B5EAD7;        /* 薄荷綠 (選取狀態/今天) */
             --accent-text: #4a8a76;
             --holiday: #FF6961;       /* 珊瑚紅 (假日文字) */
-            --holiday-bg: #FFF0F0;    /* 假日背景 */
+            --holiday-bg: #FFF0F0;    /* 假日背景 (表格行) */
             
-            /* 新增：週末顏色 (暖橘色) */
-            --weekend: #FFB74D;       
+            /* 新增：月曆假日背景 (比表格行稍微深一點的粉紅，讓月曆更明顯) */
+            --holiday-cell-bg: #ffedea; 
+
+            --weekend: #FFB74D;       /* 週末橘色 */
             
             --bg: #FFF9FA;            /* 極淡粉紅背景 */
             --card-bg: #FFFFFF;
@@ -71,14 +73,19 @@
         }
         .cal-cell:hover { background-color: #FFF0F5; }
         
-        /* 新增：週末樣式 */
+        /* 週末樣式 */
         .is-weekend { color: var(--weekend); font-weight: bold; }
 
-        .is-holiday { color: var(--holiday); font-weight: bold; }
+        /* 修改：假日樣式 (加入背景色) */
+        .is-holiday { 
+            background-color: var(--holiday-cell-bg); /* 新增背景色 */
+            color: var(--holiday); 
+            font-weight: bold; 
+        }
         .is-holiday::after { content: '★'; font-size: 0.6em; display: block; margin-top: 2px; color: var(--holiday); }
         
+        /* 選中週 (綠色) - 權重較高，會覆蓋假日的粉紅底，這很合理(編輯中狀態) */
         .is-active-week { background-color: #E2F0CB; color: #556B2F; font-weight: bold; border-radius: 12px; }
-        /* 讓選中週的字色覆蓋週末色，保持清晰 */
         .is-active-week.is-weekend { color: #556B2F; } 
         
         .is-today { border: 2px dashed var(--primary); background: #FFF; }
@@ -195,7 +202,7 @@
         
         <div style="margin-top:20px; padding-top:15px; border-top:2px dashed var(--border); font-size:0.85em; line-height:1.6; color:#888;">
             <div style="margin-bottom:5px;">📅 <b>小提醒：</b></div>
-            • <span style="color:var(--holiday);">★ 紅字</span> 是國定假日喔<br>
+            • <span style="color:var(--holiday); background:var(--holiday-cell-bg); padding:0 4px; border-radius:4px;">粉紅底</span> 是國定假日<br>
             • <span style="color:var(--weekend);">橘字</span> 是週末 (六、日)<br>
             • 綠色背景是正在編輯的週<br>
             • 午休時間 (12:00-13:00) 系統會自動扣除 1 小時<br>
@@ -520,7 +527,7 @@
                 div.title = hol;
             }
 
-            // 新增：判斷是否為六日
+            // 判斷六日
             const dayOfWeek = dateObj.getDay();
             if (dayOfWeek === 0 || dayOfWeek === 6) {
                 div.classList.add('is-weekend');
