@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>每週工時計算器 (含午休排除)</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --accent-color: #3498db;
+            --bg-color: #f4f7f6;
+            --holiday-bg: #e8f8f5;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 800px;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+
+        .rules-info {
+            background-color: #fff8e1;
+            padding: 10px;
+            border-left: 5px solid #ffc107;
+            margin-bottom: 20px;
+            font-size: 0.9em;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        tr:hover {
+            background-color: #f9f9f9;
+        }
+
+        /* 假日模式樣式 */
+        tr.is-holiday {
+            background-color: var(--holiday-bg);
+            color: #aaa;
+        }
+        tr.is-holiday input[type="time"] {
+            background-color: #eee;
+            color: #aaa;
+            pointer-events: none; /* 禁用輸入 */
+        }
+
+        input[type="time"] {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1em;
+            width: 110px;
+        }
+
+        input[type="checkbox"] {
+            transform: scale(1.5);
+            cursor: pointer;
+        }
+
+        .result-box {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .result-item {
+            margin: 10px 0;
+            font-size: 1.1em;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .highlight {
+            font-weight: bold;
+            color: #f1c40f;
+            font-size: 1.3em;
+        }
+
+        .footer {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 0.85em;
+            color: #7f8c8d;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>每週工時計算器</h1>
+    
+    <div class="rules-info">
+        <strong>計算規則：</strong>
+        <ul>
+            <li>每週目標工時：<strong>40小時</strong></li>
+            <li>午休時間 <strong>12:00 - 13:00</strong> 自動不列入工時計算。</li>
+            <li>勾選「假日/請假」該日將自動視為已工時 8 小時 (不需補班)。</li>
+        </ul>
+    </div>
+
+    <form id="timeForm">
+        <table>
+            <thead>
+                <tr>
+                    <th>星期</th>
+                    <th>上班打卡</th>
+                    <th>下班打卡</th>
+                    <th>假日/特休</th>
+                    <th>當日工時</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr id="row-1">
+                    <td>週一</td>
+                    <td><input type="time" class="start-time" value="09:00"></td>
+                    <td><input type="time" class="end-time" value="18:00"></td>
+                    <td><input type="checkbox" class="holiday-check"></td>
+                    <td class="daily-total">8.00 小時</td>
+                </tr>
+                <tr id="row-2">
+                    <td>週二</td>
+                    <td><input type="time" class="start-time" value="09:00"></td>
+                    <td><input type="time" class="end-time" value="18:00"></td>
+                    <td><input type="checkbox" class="holiday-check"></td>
+                    <td class="daily-total">8.00 小時</td>
+                </tr>
+                <tr id="row-3">
+                    <td>週三</td>
+                    <td><input type="time" class="start-time" value="09:00"></td>
+                    <td><input type="time" class="end-time" value="18:00"></td>
+                    <td><input type="checkbox" class="holiday-check"></td>
+                    <td class="daily-total">8.00 小時</td>
+                </tr>
+                <tr id="row-4">
+                    <td>週四</td>
+                    <td><input type="time" class="start-time" value="09:00"></td>
+                    <td><input type="time" class="end-time" value="18:00"></td>
+                    <td><input type="checkbox" class="holiday-check"></td>
+                    <td class="daily-total">8.00 小時</td>
+                </tr>
+                <tr id="row-5">
+                    <td>週五</td>
+                    <td><input type="time" class="start-time" value="09:00"></td>
+                    <td><input type="time" class="end-time" placeholder="自動計算"></td>
+                    <td><input type="checkbox" class="holiday-check"></td>
+                    <td class="daily-total">--</td>
+                </tr>
+            </tbody>
+        </table>
+    </form>
+
+    <div class="result-box">
+        <div class="result-item">
+            <span>目前累計工時 (含假日抵扣)：</span>
+            <span id="totalHours">0 小時</span>
+        </div>
+        <div class="result-item">
+            <span>距離 40 小時還差：</span>
+            <span id="remainingHours">0 小時</span>
+        </div>
+        <hr style="border-color: rgba(255,255,255,0.2);">
+        <div class="result-item">
+            <span>週五建議下班時間：</span>
+            <span id="targetLeaveTime" class="highlight">--:--</span>
+        </div>
+    </div>
+    
+    <div class="footer">
+        系統會自動根據您的輸入即時計算。
+    </div>
+</div>
+
+<script>
+    // 常數設定
+    const LUNCH_START_MIN = 12 * 60; // 12:00 in minutes
+    const LUNCH_END_MIN = 13 * 60;   // 13:00 in minutes
+    const TARGET_WEEKLY_MIN = 40 * 60; // 40 hours in minutes
+
+    // 取得 DOM 元素
+    const rows = document.querySelectorAll('tbody tr');
+    const totalHoursEl = document.getElementById('totalHours');
+    const remainingHoursEl = document.getElementById('remainingHours');
+    const targetLeaveTimeEl = document.getElementById('targetLeaveTime');
+
+    // 監聽所有輸入變更
+    document.getElementById('timeForm').addEventListener('input', calculate);
+    document.getElementById('timeForm').addEventListener('change', calculate);
+
+    function timeToMinutes(timeStr) {
+        if (!timeStr) return null;
+        const [hours, minutes] = timeStr.split(':').map(Number);
+        return hours * 60 + minutes;
+    }
+
+    function minutesToTime(totalMinutes) {
+        // 處理跨日問題 (雖然不常見，但以防萬一)
+        let hours = Math.floor(totalMinutes / 60);
+        let minutes = Math.floor(totalMinutes % 60);
+        
+        // 補零
+        const hStr = hours.toString().padStart(2, '0');
+        const mStr = minutes.toString().padStart(2, '0');
+        return `${hStr}:${mStr}`;
+    }
+
+    // 計算兩個時間點之間的「有效工時」 (扣除午休)
+    function calculateNetMinutes(startMin, endMin) {
+        if (startMin === null || endMin === null || startMin >= endMin) return 0;
+
+        let rawDuration = endMin - startMin;
+        let lunchOverlap = 0;
+
+        // 計算與午休時間的重疊部分
+        // 重疊開始 = max(上班時間, 午休開始)
+        // 重疊結束 = min(下班時間, 午休結束)
+        const overlapStart = Math.max(startMin, LUNCH_START_MIN);
+        const overlapEnd = Math.min(endMin, LUNCH_END_MIN);
+
+        if (overlapEnd > overlapStart) {
+            lunchOverlap = overlapEnd - overlapStart;
+        }
+
+        return rawDuration - lunchOverlap;
+    }
+
+    // 根據開始時間和需要的工時，推算結束時間 (需跳過午休)
+    function predictEndTime(startMin, minutesNeeded) {
+        if (minutesNeeded <= 0) return minutesToTime(startMin); // 已經達標，理論上現在即可下班
+
+        let currentMin = startMin;
+        let worked = 0;
+
+        // 簡單的逐分模擬法 (確保邏輯絕對正確)
+        // 雖然效能不是最快，但對於一天內的計算非常精確且不易出錯
+        while (worked < minutesNeeded) {
+            currentMin++;
+            // 如果當前分鐘不在午休時間內，則計入工作時間
+            // 判斷邏輯：如果現在時間 >= 12:00 且 < 13:00，則不計入
+            if (currentMin > LUNCH_START_MIN && currentMin <= LUNCH_END_MIN) {
+                // 午休中，不累積 worked，但時間繼續走
+            } else {
+                worked++;
+            }
+        }
+        return minutesToTime(currentMin);
+    }
+
+    function calculate() {
+        let currentTotalMinutes = 0;
+        
+        // 1. 遍歷週一到週五
+        rows.forEach((row, index) => {
+            const startInput = row.querySelector('.start-time');
+            const endInput = row.querySelector('.end-time');
+            const holidayCheck = row.querySelector('.holiday-check');
+            const dailyTotalDisplay = row.querySelector('.daily-total');
+
+            // 處理假日樣式
+            if (holidayCheck.checked) {
+                row.classList.add('is-holiday');
+                // 假日視為 8 小時 (480分鐘)
+                currentTotalMinutes += 480; 
+                dailyTotalDisplay.textContent = "8.00 小時 (假)";
+                return; // 跳過此行後續計算
+            } else {
+                row.classList.remove('is-holiday');
+            }
+
+            const startVal = startInput.value;
+            const endVal = endInput.value;
+
+            // 週五 (最後一行) 且沒有輸入下班時間時，跳過單日計算，留給預測邏輯
+            if (index === 4 && !endVal) {
+                dailyTotalDisplay.textContent = "計算中...";
+                return;
+            }
+
+            if (startVal && endVal) {
+                const startMin = timeToMinutes(startVal);
+                const endMin = timeToMinutes(endVal);
+                
+                const netMinutes = calculateNetMinutes(startMin, endMin);
+                const hours = (netMinutes / 60).toFixed(2);
+                
+                dailyTotalDisplay.textContent = `${hours} 小時`;
+                currentTotalMinutes += netMinutes;
+            } else {
+                dailyTotalDisplay.textContent = "0.00 小時";
+            }
+        });
+
+        // 2. 更新總結顯示
+        totalHoursEl.textContent = `${(currentTotalMinutes / 60).toFixed(2)} 小時`;
+
+        // 3. 計算剩餘需求
+        // 注意：這裡的 currentTotalMinutes 包含了週五「已輸入」的工時
+        // 如果週五還沒輸入下班時間，我們要算出缺多少
+        
+        // 但為了預測週五下班時間，我們需要知道「週五上班前」累積了多少
+        // 因此我們重新計算一下前四天(或已完成的天下)
+        
+        let accumulatedMinutesBeforeFriday = 0;
+        // 重新遍歷前4天 + 週五如果有勾假
+        for (let i = 0; i < 4; i++) {
+            const row = rows[i];
+            const holiday = row.querySelector('.holiday-check').checked;
+            if (holiday) {
+                accumulatedMinutesBeforeFriday += 480;
+            } else {
+                const s = timeToMinutes(row.querySelector('.start-time').value);
+                const e = timeToMinutes(row.querySelector('.end-time').value);
+                accumulatedMinutesBeforeFriday += calculateNetMinutes(s, e);
+            }
+        }
+
+        const remainingMinutes = TARGET_WEEKLY_MIN - accumulatedMinutesBeforeFriday;
+        
+        // 顯示剩餘時數 (這是整週還差多少)
+        const remainingForDisplay = Math.max(0, TARGET_WEEKLY_MIN - currentTotalMinutes);
+        remainingHoursEl.textContent = `${(remainingForDisplay / 60).toFixed(2)} 小時`;
+
+        // 4. 計算週五下班時間
+        const fridayRow = rows[4];
+        const fridayHoliday = fridayRow.querySelector('.holiday-check').checked;
+        const fridayStart = fridayRow.querySelector('.start-time').value;
+
+        if (fridayHoliday) {
+            targetLeaveTimeEl.textContent = "週五休假";
+        } else if (remainingMinutes <= 0) {
+            targetLeaveTimeEl.textContent = "已達標，可隨時下班";
+        } else if (fridayStart) {
+            // 用週五上班時間 + 剩餘需要的時間 (需考慮午休)
+            const fridayStartMin = timeToMinutes(fridayStart);
+            const leaveTime = predictEndTime(fridayStartMin, remainingMinutes);
+            targetLeaveTimeEl.textContent = leaveTime;
+        } else {
+            targetLeaveTimeEl.textContent = "請輸入週五上班時間";
+        }
+    }
+
+    // 初始化執行一次
+    calculate();
+
+</script>
+
+</body>
+</html>
