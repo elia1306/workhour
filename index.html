@@ -3,380 +3,457 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>每週工時計算器 (含午休排除)</title>
+    <title>智慧工時表 (自動聯網更新假日)</title>
     <style>
         :root {
-            --primary-color: #2c3e50;
-            --accent-color: #3498db;
-            --bg-color: #f4f7f6;
-            --holiday-bg: #e8f8f5;
+            --primary: #2c3e50;
+            --secondary: #34495e;
+            --accent: #2980b9;
+            --holiday: #c0392b;
+            --holiday-bg: #fadbd8;
+            --bg: #f5f7fa;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
-            color: #333;
+            font-family: '微軟正黑體', sans-serif;
+            background-color: var(--bg);
             margin: 0;
             padding: 20px;
-            display: flex;
-            justify-content: center;
+            color: #333;
         }
 
         .container {
+            max-width: 900px;
+            margin: 0 auto;
             background: white;
-            padding: 30px;
-            border-radius: 12px;
+            padding: 25px;
+            border-radius: 10px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            width: 100%;
-            max-width: 800px;
         }
 
-        h1 {
+        .header {
             text-align: center;
-            color: var(--primary-color);
             margin-bottom: 20px;
         }
+        
+        .status-badge {
+            font-size: 0.8em;
+            padding: 4px 8px;
+            border-radius: 12px;
+            background: #eee;
+            color: #666;
+            vertical-align: middle;
+        }
+        .status-ok { background: #d4edda; color: #155724; }
+        .status-err { background: #f8d7da; color: #721c24; }
 
-        .rules-info {
-            background-color: #fff8e1;
-            padding: 10px;
-            border-left: 5px solid #ffc107;
+        .control-panel {
+            background-color: #ecf0f1;
+            padding: 15px;
+            border-radius: 8px;
             margin-bottom: 20px;
-            font-size: 0.9em;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            align-items: center;
+            border-left: 5px solid var(--accent);
         }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-
-        th, td {
-            padding: 12px;
-            text-align: center;
-            border-bottom: 1px solid #ddd;
-        }
-
-        th {
-            background-color: var(--primary-color);
+        .control-group { display: flex; flex-direction: column; }
+        label { font-size: 0.9em; color: #666; margin-bottom: 5px; font-weight: bold;}
+        select, input[type="date"], input[type="text"] { padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
+        
+        button {
+            padding: 8px 15px;
+            background-color: var(--accent);
             color: white;
-        }
-
-        tr:hover {
-            background-color: #f9f9f9;
-        }
-
-        /* 假日模式樣式 */
-        tr.is-holiday {
-            background-color: var(--holiday-bg);
-            color: #aaa;
-        }
-        tr.is-holiday input[type="time"] {
-            background-color: #eee;
-            color: #aaa;
-            pointer-events: none; /* 禁用輸入 */
-        }
-
-        input[type="time"] {
-            padding: 8px;
-            border: 1px solid #ccc;
+            border: none;
             border-radius: 4px;
-            font-size: 1em;
-            width: 110px;
-        }
-
-        input[type="checkbox"] {
-            transform: scale(1.5);
             cursor: pointer;
         }
+        button:hover { opacity: 0.9; }
+        .btn-danger { background-color: #e74c3c; }
 
-        .result-box {
-            background-color: var(--primary-color);
+        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        th, td { padding: 12px 8px; text-align: center; border-bottom: 1px solid #eee; }
+        th { background-color: var(--primary); color: white; }
+        
+        .date-display { display: block; font-size: 0.8em; color: #7f8c8d; }
+        
+        tr.is-holiday { background-color: var(--holiday-bg); }
+        tr.is-holiday .holiday-tag { color: var(--holiday); font-weight: bold; font-size: 0.9em; display: block; }
+        
+        input[type="time"] { padding: 6px; border: 1px solid #ddd; border-radius: 4px; width: 110px; }
+        input[type="checkbox"] { transform: scale(1.5); cursor: pointer; }
+
+        .summary-box {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+            background-color: var(--secondary);
             color: white;
             padding: 20px;
             border-radius: 8px;
-            margin-top: 20px;
         }
+        .summary-item div:first-child { font-size: 0.9em; opacity: 0.8; }
+        .summary-item div:last-child { font-size: 1.5em; font-weight: bold; margin-top: 5px; }
+        .highlight { color: #f1c40f; }
 
-        .result-item {
-            margin: 10px 0;
-            font-size: 1.1em;
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .highlight {
-            font-weight: bold;
-            color: #f1c40f;
-            font-size: 1.3em;
-        }
-
-        .footer {
-            margin-top: 20px;
-            text-align: center;
-            font-size: 0.85em;
-            color: #7f8c8d;
-        }
+        /* 讀取動畫 */
+        .loading { opacity: 0.5; pointer-events: none; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>每週工時計算器</h1>
-    
-    <div class="rules-info">
-        <strong>計算規則：</strong>
-        <ul>
-            <li>每週目標工時：<strong>40小時</strong></li>
-            <li>午休時間 <strong>12:00 - 13:00</strong> 自動不列入工時計算。</li>
-            <li>勾選「假日/請假」該日將自動視為已工時 8 小時 (不需補班)。</li>
-        </ul>
+    <div class="header">
+        <h2 style="display:inline-block; margin:0;">雲端工時管理系統</h2>
+        <span id="apiStatus" class="status-badge">檢查假日資料中...</span>
     </div>
 
-    <form id="timeForm">
-        <table>
-            <thead>
-                <tr>
-                    <th>星期</th>
-                    <th>上班打卡</th>
-                    <th>下班打卡</th>
-                    <th>假日/特休</th>
-                    <th>當日工時</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr id="row-1">
-                    <td>週一</td>
-                    <td><input type="time" class="start-time" value="09:00"></td>
-                    <td><input type="time" class="end-time" value="18:00"></td>
-                    <td><input type="checkbox" class="holiday-check"></td>
-                    <td class="daily-total">8.00 小時</td>
-                </tr>
-                <tr id="row-2">
-                    <td>週二</td>
-                    <td><input type="time" class="start-time" value="09:00"></td>
-                    <td><input type="time" class="end-time" value="18:00"></td>
-                    <td><input type="checkbox" class="holiday-check"></td>
-                    <td class="daily-total">8.00 小時</td>
-                </tr>
-                <tr id="row-3">
-                    <td>週三</td>
-                    <td><input type="time" class="start-time" value="09:00"></td>
-                    <td><input type="time" class="end-time" value="18:00"></td>
-                    <td><input type="checkbox" class="holiday-check"></td>
-                    <td class="daily-total">8.00 小時</td>
-                </tr>
-                <tr id="row-4">
-                    <td>週四</td>
-                    <td><input type="time" class="start-time" value="09:00"></td>
-                    <td><input type="time" class="end-time" value="18:00"></td>
-                    <td><input type="checkbox" class="holiday-check"></td>
-                    <td class="daily-total">8.00 小時</td>
-                </tr>
-                <tr id="row-5">
-                    <td>週五</td>
-                    <td><input type="time" class="start-time" value="09:00"></td>
-                    <td><input type="time" class="end-time" placeholder="自動計算"></td>
-                    <td><input type="checkbox" class="holiday-check"></td>
-                    <td class="daily-total">--</td>
-                </tr>
-            </tbody>
-        </table>
-    </form>
+    <div class="control-panel">
+        <div class="control-group">
+            <label>選擇人員</label>
+            <div style="display:flex; gap:5px;">
+                <select id="userSelect" onchange="switchUser()"></select>
+                <button onclick="addNewUser()">+</button>
+                <button class="btn-danger" onclick="deleteUser()">-</button>
+            </div>
+        </div>
 
-    <div class="result-box">
-        <div class="result-item">
-            <span>目前累計工時 (含假日抵扣)：</span>
-            <span id="totalHours">0 小時</span>
+        <div class="control-group">
+            <label>本週開始日期 (週一)</label>
+            <input type="date" id="weekStartDate" onchange="handleWeekChange()">
         </div>
-        <div class="result-item">
-            <span>距離 40 小時還差：</span>
-            <span id="remainingHours">0 小時</span>
-        </div>
-        <hr style="border-color: rgba(255,255,255,0.2);">
-        <div class="result-item">
-            <span>週五建議下班時間：</span>
-            <span id="targetLeaveTime" class="highlight">--:--</span>
+        
+        <div class="control-group" style="justify-content:end;">
+             <button onclick="forceUpdateHolidays()" style="background:#27ae60; margin-top:22px;">↻ 重新抓取假日</button>
         </div>
     </div>
-    
-    <div class="footer">
-        系統會自動根據您的輸入即時計算。
+
+    <table>
+        <thead>
+            <tr>
+                <th width="15%">日期</th>
+                <th width="20%">上班</th>
+                <th width="20%">下班</th>
+                <th width="15%">午休 (1H)</th>
+                <th width="10%">假日</th>
+                <th width="20%">工時</th>
+            </tr>
+        </thead>
+        <tbody id="timesheetBody"></tbody>
+    </table>
+
+    <div class="summary-box">
+        <div class="summary-item">
+            <div>已累積工時</div>
+            <div id="totalHours">0.00</div>
+        </div>
+        <div class="summary-item">
+            <div>距離 40H 還差</div>
+            <div id="remainingHours">0.00</div>
+        </div>
+        <div class="summary-item">
+            <div>週五建議下班</div>
+            <div id="predictTime" class="highlight">--:--</div>
+        </div>
     </div>
 </div>
 
 <script>
-    // 常數設定
-    const LUNCH_START_MIN = 12 * 60; // 12:00 in minutes
-    const LUNCH_END_MIN = 13 * 60;   // 13:00 in minutes
-    const TARGET_WEEKLY_MIN = 40 * 60; // 40 hours in minutes
+    // --- 1. 設定與變數 ---
+    const LUNCH_START = 12 * 60;
+    const LUNCH_END = 13 * 60;
+    const TARGET_HOURS = 40;
+    
+    // 使用 CDN 取得台灣行事曆 (來源: ruyut/taiwan-calendar-json)
+    const HOLIDAY_API_URL = "https://cdn.jsdelivr.net/gh/ruyut/taiwan-calendar-json/data/";
 
-    // 取得 DOM 元素
-    const rows = document.querySelectorAll('tbody tr');
-    const totalHoursEl = document.getElementById('totalHours');
-    const remainingHoursEl = document.getElementById('remainingHours');
-    const targetLeaveTimeEl = document.getElementById('targetLeaveTime');
+    let users = JSON.parse(localStorage.getItem('worklog_users')) || ['預設人員'];
+    let currentUser = users[0];
+    
+    // 記憶體中的假日快取 { '2025': { '0101': '元旦' ... } }
+    let holidayCache = {};
 
-    // 監聽所有輸入變更
-    document.getElementById('timeForm').addEventListener('input', calculate);
-    document.getElementById('timeForm').addEventListener('change', calculate);
+    window.onload = async function() {
+        initUserSelect();
+        setDefaultDate();
+        // 初始載入假日
+        const year = new Date().getFullYear();
+        await loadHolidaysForYear(year);
+        handleWeekChange(); // 繪製並計算
+    };
 
-    function timeToMinutes(timeStr) {
-        if (!timeStr) return null;
-        const [hours, minutes] = timeStr.split(':').map(Number);
-        return hours * 60 + minutes;
-    }
+    // --- 2. 核心：自動更新假日 (聯網功能) ---
 
-    function minutesToTime(totalMinutes) {
-        // 處理跨日問題 (雖然不常見，但以防萬一)
-        let hours = Math.floor(totalMinutes / 60);
-        let minutes = Math.floor(totalMinutes % 60);
+    async function loadHolidaysForYear(year) {
+        // 如果記憶體或 localStorage 已經有該年份資料，就不用重抓
+        const localKey = `holidays_${year}`;
+        const localData = localStorage.getItem(localKey);
         
-        // 補零
-        const hStr = hours.toString().padStart(2, '0');
-        const mStr = minutes.toString().padStart(2, '0');
-        return `${hStr}:${mStr}`;
-    }
-
-    // 計算兩個時間點之間的「有效工時」 (扣除午休)
-    function calculateNetMinutes(startMin, endMin) {
-        if (startMin === null || endMin === null || startMin >= endMin) return 0;
-
-        let rawDuration = endMin - startMin;
-        let lunchOverlap = 0;
-
-        // 計算與午休時間的重疊部分
-        // 重疊開始 = max(上班時間, 午休開始)
-        // 重疊結束 = min(下班時間, 午休結束)
-        const overlapStart = Math.max(startMin, LUNCH_START_MIN);
-        const overlapEnd = Math.min(endMin, LUNCH_END_MIN);
-
-        if (overlapEnd > overlapStart) {
-            lunchOverlap = overlapEnd - overlapStart;
+        if (holidayCache[year]) return; // 記憶體已有
+        
+        if (localData) {
+            console.log(`載入 ${year} 本地假日資料`);
+            holidayCache[year] = JSON.parse(localData);
+            updateStatus(true, `${year} 資料已載入 (本地)`);
+            return;
         }
 
-        return rawDuration - lunchOverlap;
+        // 否則，從網路抓取
+        updateStatus(false, `正在下載 ${year} 行事曆...`);
+        try {
+            const response = await fetch(`${HOLIDAY_API_URL}${year}.json`);
+            if (!response.ok) throw new Error("無此年份資料");
+            
+            const data = await response.json();
+            
+            // 轉換資料格式為簡單的 { 'MM-DD': '節日名稱' }
+            // API 格式通常是: [ { date: "20250101", description: "開國紀念日", isHoliday: true }, ... ]
+            const processed = {};
+            data.forEach(item => {
+                if (item.isHoliday) {
+                    // item.date 格式為 "20250127" -> 取 "01-27"
+                    const dStr = item.date + ""; 
+                    const key = `${dStr.substring(4,6)}-${dStr.substring(6,8)}`;
+                    processed[key] = item.description || "國定假日";
+                }
+            });
+
+            holidayCache[year] = processed;
+            localStorage.setItem(localKey, JSON.stringify(processed)); // 存入本地
+            updateStatus(true, `${year} 資料更新完成`);
+
+        } catch (e) {
+            console.error(e);
+            updateStatus(false, `無法抓取 ${year} 資料 (請檢查網路)`, true);
+            // 失敗時給一個空的物件，避免卡死
+            holidayCache[year] = {}; 
+        }
     }
 
-    // 根據開始時間和需要的工時，推算結束時間 (需跳過午休)
-    function predictEndTime(startMin, minutesNeeded) {
-        if (minutesNeeded <= 0) return minutesToTime(startMin); // 已經達標，理論上現在即可下班
+    function updateStatus(isOk, text, isError = false) {
+        const badge = document.getElementById('apiStatus');
+        badge.textContent = text;
+        badge.className = 'status-badge ' + (isError ? 'status-err' : (isOk ? 'status-ok' : ''));
+    }
 
-        let currentMin = startMin;
-        let worked = 0;
+    async function forceUpdateHolidays() {
+        const year = document.getElementById('weekStartDate').value.substring(0, 4);
+        localStorage.removeItem(`holidays_${year}`);
+        delete holidayCache[year];
+        await loadHolidaysForYear(year);
+        renderTable();
+        loadUserData();
+    }
 
-        // 簡單的逐分模擬法 (確保邏輯絕對正確)
-        // 雖然效能不是最快，但對於一天內的計算非常精確且不易出錯
-        while (worked < minutesNeeded) {
-            currentMin++;
-            // 如果當前分鐘不在午休時間內，則計入工作時間
-            // 判斷邏輯：如果現在時間 >= 12:00 且 < 13:00，則不計入
-            if (currentMin > LUNCH_START_MIN && currentMin <= LUNCH_END_MIN) {
-                // 午休中，不累積 worked，但時間繼續走
-            } else {
-                worked++;
-            }
+    function getHolidayName(dateStr) {
+        // dateStr: "2025-01-27"
+        const year = dateStr.substring(0, 4);
+        const md = dateStr.substring(5, 10); // "01-27"
+        
+        if (!holidayCache[year]) return null;
+        return holidayCache[year][md] || null;
+    }
+
+    // --- 3. 表格渲染與邏輯 ---
+
+    async function handleWeekChange() {
+        const dateInput = document.getElementById('weekStartDate');
+        if(!dateInput.value) return;
+
+        // 檢查選到的週是否跨年 (例如 12月底到1月初)
+        // 簡單起見，我們載入該週第一天的年份即可，若很嚴謹應該檢查每一天
+        const y = dateInput.value.substring(0, 4);
+        
+        if (!holidayCache[y]) {
+            await loadHolidaysForYear(y);
         }
-        return minutesToTime(currentMin);
+        
+        renderTable();
+        loadUserData();
+    }
+
+    function renderTable() {
+        const tbody = document.getElementById('timesheetBody');
+        tbody.innerHTML = '';
+        const weekStartVal = document.getElementById('weekStartDate').value;
+        const startDate = new Date(weekStartVal);
+        const days = ['週一', '週二', '週三', '週四', '週五'];
+
+        for (let i = 0; i < 5; i++) {
+            const currentDate = new Date(startDate);
+            currentDate.setDate(startDate.getDate() + i);
+            // 格式化為 YYYY-MM-DD (處理時區偏移問題)
+            const y = currentDate.getFullYear();
+            const m = String(currentDate.getMonth() + 1).padStart(2,'0');
+            const d = String(currentDate.getDate()).padStart(2,'0');
+            const dateStr = `${y}-${m}-${d}`;
+            
+            const holidayName = getHolidayName(dateStr);
+
+            const tr = document.createElement('tr');
+            tr.id = `day-${i}`;
+            tr.dataset.date = dateStr;
+
+            let holidayClass = holidayName ? 'is-holiday' : '';
+            let holidayText = holidayName ? `<span class="holiday-tag">${holidayName}</span>` : '';
+            let checkedAttr = holidayName ? 'checked' : '';
+
+            tr.className = holidayClass;
+            tr.innerHTML = `
+                <td>${days[i]} <span class="date-display">${dateStr}</span>${holidayText}</td>
+                <td><input type="time" class="start-time" value="09:00" onchange="calculate()"></td>
+                <td><input type="time" class="end-time" value="18:00" onchange="calculate()"></td>
+                <td style="font-size:0.8em; color:#666;">-1H</td>
+                <td><input type="checkbox" class="holiday-check" ${checkedAttr} onchange="calculate()"></td>
+                <td class="daily-hours">0.00 H</td>
+            `;
+            tbody.appendChild(tr);
+        }
     }
 
     function calculate() {
-        let currentTotalMinutes = 0;
+        saveUserData();
+        let totalMinutes = 0;
+        let minsBeforeFri = 0;
+        const rows = document.querySelectorAll('#timesheetBody tr');
         
-        // 1. 遍歷週一到週五
         rows.forEach((row, index) => {
-            const startInput = row.querySelector('.start-time');
-            const endInput = row.querySelector('.end-time');
-            const holidayCheck = row.querySelector('.holiday-check');
-            const dailyTotalDisplay = row.querySelector('.daily-total');
+            const sVal = timeToMin(row.querySelector('.start-time').value);
+            const eVal = timeToMin(row.querySelector('.end-time').value);
+            const isHoliday = row.querySelector('.holiday-check').checked;
+            const display = row.querySelector('.daily-hours');
 
-            // 處理假日樣式
-            if (holidayCheck.checked) {
+            if (isHoliday) {
                 row.classList.add('is-holiday');
-                // 假日視為 8 小時 (480分鐘)
-                currentTotalMinutes += 480; 
-                dailyTotalDisplay.textContent = "8.00 小時 (假)";
-                return; // 跳過此行後續計算
+                totalMinutes += 480; // 8 hours
+                display.textContent = "8.00 H (假)";
+                if (index < 4) minsBeforeFri += 480;
+                row.querySelector('.start-time').style.opacity = 0.5;
+                row.querySelector('.end-time').style.opacity = 0.5;
             } else {
                 row.classList.remove('is-holiday');
-            }
+                row.querySelector('.start-time').style.opacity = 1;
+                row.querySelector('.end-time').style.opacity = 1;
 
-            const startVal = startInput.value;
-            const endVal = endInput.value;
-
-            // 週五 (最後一行) 且沒有輸入下班時間時，跳過單日計算，留給預測邏輯
-            if (index === 4 && !endVal) {
-                dailyTotalDisplay.textContent = "計算中...";
-                return;
-            }
-
-            if (startVal && endVal) {
-                const startMin = timeToMinutes(startVal);
-                const endMin = timeToMinutes(endVal);
-                
-                const netMinutes = calculateNetMinutes(startMin, endMin);
-                const hours = (netMinutes / 60).toFixed(2);
-                
-                dailyTotalDisplay.textContent = `${hours} 小時`;
-                currentTotalMinutes += netMinutes;
-            } else {
-                dailyTotalDisplay.textContent = "0.00 小時";
+                if (sVal !== null && eVal !== null) {
+                    const net = calcNetWork(sVal, eVal);
+                    totalMinutes += net;
+                    display.textContent = (net / 60).toFixed(2) + " H";
+                    if (index < 4) minsBeforeFri += net;
+                } else {
+                    display.textContent = "--";
+                }
             }
         });
 
-        // 2. 更新總結顯示
-        totalHoursEl.textContent = `${(currentTotalMinutes / 60).toFixed(2)} 小時`;
+        // Update Summary
+        document.getElementById('totalHours').textContent = (totalMinutes/60).toFixed(2) + " H";
+        const remain = Math.max(0, TARGET_HOURS*60 - totalMinutes);
+        document.getElementById('remainingHours').textContent = (remain/60).toFixed(2) + " H";
+        
+        // Predict Friday
+        const friRow = rows[4];
+        const friHoliday = friRow.querySelector('.holiday-check').checked;
+        const friStart = friRow.querySelector('.start-time').value;
+        const predictBox = document.getElementById('predictTime');
+        const neededForFri = (TARGET_HOURS*60) - minsBeforeFri;
 
-        // 3. 計算剩餘需求
-        // 注意：這裡的 currentTotalMinutes 包含了週五「已輸入」的工時
-        // 如果週五還沒輸入下班時間，我們要算出缺多少
-        
-        // 但為了預測週五下班時間，我們需要知道「週五上班前」累積了多少
-        // 因此我們重新計算一下前四天(或已完成的天下)
-        
-        let accumulatedMinutesBeforeFriday = 0;
-        // 重新遍歷前4天 + 週五如果有勾假
-        for (let i = 0; i < 4; i++) {
-            const row = rows[i];
-            const holiday = row.querySelector('.holiday-check').checked;
-            if (holiday) {
-                accumulatedMinutesBeforeFriday += 480;
-            } else {
-                const s = timeToMinutes(row.querySelector('.start-time').value);
-                const e = timeToMinutes(row.querySelector('.end-time').value);
-                accumulatedMinutesBeforeFriday += calculateNetMinutes(s, e);
+        if(friHoliday) predictBox.textContent = "週五休假";
+        else if(neededForFri <= 0) predictBox.textContent = "已達標";
+        else if(!friStart) predictBox.textContent = "待輸入";
+        else {
+            let w = 0, c = timeToMin(friStart);
+            while(w < neededForFri) {
+                c++;
+                if(c <= LUNCH_START || c > LUNCH_END) w++;
             }
-        }
-
-        const remainingMinutes = TARGET_WEEKLY_MIN - accumulatedMinutesBeforeFriday;
-        
-        // 顯示剩餘時數 (這是整週還差多少)
-        const remainingForDisplay = Math.max(0, TARGET_WEEKLY_MIN - currentTotalMinutes);
-        remainingHoursEl.textContent = `${(remainingForDisplay / 60).toFixed(2)} 小時`;
-
-        // 4. 計算週五下班時間
-        const fridayRow = rows[4];
-        const fridayHoliday = fridayRow.querySelector('.holiday-check').checked;
-        const fridayStart = fridayRow.querySelector('.start-time').value;
-
-        if (fridayHoliday) {
-            targetLeaveTimeEl.textContent = "週五休假";
-        } else if (remainingMinutes <= 0) {
-            targetLeaveTimeEl.textContent = "已達標，可隨時下班";
-        } else if (fridayStart) {
-            // 用週五上班時間 + 剩餘需要的時間 (需考慮午休)
-            const fridayStartMin = timeToMinutes(fridayStart);
-            const leaveTime = predictEndTime(fridayStartMin, remainingMinutes);
-            targetLeaveTimeEl.textContent = leaveTime;
-        } else {
-            targetLeaveTimeEl.textContent = "請輸入週五上班時間";
+            predictBox.textContent = minToTime(c);
         }
     }
 
-    // 初始化執行一次
-    calculate();
+    // --- 4. 基礎功能與資料存取 ---
+    
+    function initUserSelect() {
+        const sel = document.getElementById('userSelect');
+        sel.innerHTML = '';
+        users.forEach(u => sel.add(new Option(u, u)));
+        sel.value = currentUser;
+    }
+    function switchUser() {
+        currentUser = document.getElementById('userSelect').value;
+        loadUserData();
+    }
+    function addNewUser() {
+        const n = prompt("新人員名稱:");
+        if(n && !users.includes(n)) {
+            users.push(n); localStorage.setItem('worklog_users', JSON.stringify(users));
+            currentUser = n; initUserSelect(); loadUserData();
+        }
+    }
+    function deleteUser() {
+        if(users.length<=1) return alert("無法刪除最後一人");
+        if(confirm("刪除此人?")) {
+            users = users.filter(u=>u!==currentUser);
+            localStorage.setItem('worklog_users', JSON.stringify(users));
+            currentUser=users[0]; initUserSelect(); loadUserData();
+        }
+    }
+    function setDefaultDate() {
+        const d = new Date();
+        const day = d.getDay();
+        const diff = d.getDate() - day + (day == 0 ? -6 : 1);
+        const mon = new Date(d.setDate(diff));
+        document.getElementById('weekStartDate').value = mon.toISOString().split('T')[0];
+    }
+    
+    function timeToMin(s) { return s ? s.split(':').reduce((h,m)=>h*60 + +m) : null; }
+    function minToTime(m) { return `${String(Math.floor(m/60)).padStart(2,'0')}:${String(m%60).padStart(2,'0')}`; }
+    function calcNetWork(s, e) {
+        if(s>=e) return 0;
+        let d = e-s;
+        let oS = Math.max(s, LUNCH_START), oE = Math.min(e, LUNCH_END);
+        if(oE > oS) d -= (oE-oS);
+        return d;
+    }
 
+    function saveUserData() {
+        const d = document.getElementById('weekStartDate').value;
+        const rows = document.querySelectorAll('#timesheetBody tr');
+        const data = Array.from(rows).map(r => ({
+            s: r.querySelector('.start-time').value,
+            e: r.querySelector('.end-time').value,
+            h: r.querySelector('.holiday-check').checked
+        }));
+        localStorage.setItem(`worklog_${currentUser}_${d}`, JSON.stringify(data));
+    }
+
+    function loadUserData() {
+        const d = document.getElementById('weekStartDate').value;
+        const data = JSON.parse(localStorage.getItem(`worklog_${currentUser}_${d}`));
+        const rows = document.querySelectorAll('#timesheetBody tr');
+        
+        if(data) {
+            rows.forEach((r,i) => {
+                if(data[i]) {
+                    r.querySelector('.start-time').value = data[i].s;
+                    r.querySelector('.end-time').value = data[i].e;
+                    r.querySelector('.holiday-check').checked = data[i].h;
+                }
+            });
+        } else {
+            // 無紀錄時，依照假日資料自動勾選
+            rows.forEach(r => {
+                const isHoliday = r.classList.contains('is-holiday'); // renderTable 時已經判斷過了
+                r.querySelector('.holiday-check').checked = isHoliday;
+                r.querySelector('.start-time').value = "09:00";
+                r.querySelector('.end-time').value = (r.id === 'day-4') ? "" : "18:00";
+            });
+        }
+        calculate();
+    }
 </script>
-
 </body>
 </html>
