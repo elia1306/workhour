@@ -130,7 +130,7 @@
         
         input { font-family: inherit; }
         
-        /* 增加：Disabled 狀態的統一樣式 */
+        /* Disabled 狀態統一樣式 */
         input:disabled {
             background-color: transparent !important;
             opacity: 0.3;
@@ -188,6 +188,7 @@
             <div style="margin-bottom:5px;">📅 <b>小提醒：</b></div>
             • <span style="color:var(--holiday);">★ 紅字</span> 是國定假日喔<br>
             • 綠色背景是正在編輯的週<br>
+            • 午休時間 (12:00-13:00) 系統會自動扣除 1 小時<br>
         </div>
     </div>
 
@@ -215,7 +216,6 @@
                     <th width="28%" style="text-align:left; padding-left:20px;">日期</th>
                     <th>上班</th>
                     <th>下班</th>
-                    <th>午休</th>
                     <th>請假</th>
                     <th>休假</th>
                     <th>工時</th>
@@ -343,11 +343,11 @@
                 </div>
             `;
 
+            // 移除：<td>...-1H...</td>
             tr.innerHTML = `
                 <td style="text-align:left;">${dateHTML}</td>
                 <td><input type="time" class="inp-s" value="09:00" onchange="update()"></td>
                 <td><input type="time" class="inp-e" value="18:00" onchange="update()"></td>
-                <td style="color:#aaa; font-size:0.8em;">-1H</td>
                 <td><input type="number" class="inp-l leave-inp" min="0" max="8" step="0.5" onchange="update()"></td>
                 <td><input type="checkbox" class="inp-h" onchange="update()"></td>
                 <td class="res-h" style="font-weight:bold; color:var(--text);">0.00</td>
@@ -381,7 +381,6 @@
                 tr.classList.add('mode-holiday');
                 dayMins = 480; 
                 res.textContent = "8H";
-                // 修正：僅設定屬性，外觀由 CSS input:disabled 控制
                 inps.forEach(k => k.disabled = true);
             } else {
                 inps.forEach(k => k.disabled = false);
