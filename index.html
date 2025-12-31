@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Elia 工時計算表</title>
+    <title>工時計算表</title>
     <style>
         :root {
             /* --- 可愛馬卡龍配色 --- */
@@ -13,6 +13,10 @@
             --accent-text: #4a8a76;
             --holiday: #FF6961;       /* 珊瑚紅 (假日文字) */
             --holiday-bg: #FFF0F0;    /* 假日背景 */
+            
+            /* 新增：週末顏色 (暖橘色) */
+            --weekend: #FFB74D;       
+            
             --bg: #FFF9FA;            /* 極淡粉紅背景 */
             --card-bg: #FFFFFF;
             --text: #6B5B5B;          /* 暖灰文字 (不刺眼) */
@@ -67,10 +71,16 @@
         }
         .cal-cell:hover { background-color: #FFF0F5; }
         
+        /* 新增：週末樣式 */
+        .is-weekend { color: var(--weekend); font-weight: bold; }
+
         .is-holiday { color: var(--holiday); font-weight: bold; }
         .is-holiday::after { content: '★'; font-size: 0.6em; display: block; margin-top: 2px; color: var(--holiday); }
         
         .is-active-week { background-color: #E2F0CB; color: #556B2F; font-weight: bold; border-radius: 12px; }
+        /* 讓選中週的字色覆蓋週末色，保持清晰 */
+        .is-active-week.is-weekend { color: #556B2F; } 
+        
         .is-today { border: 2px dashed var(--primary); background: #FFF; }
 
         /* --- 右側工時表 --- */
@@ -130,7 +140,6 @@
         
         input { font-family: inherit; }
         
-        /* Disabled 狀態統一樣式 */
         input:disabled {
             background-color: transparent !important;
             opacity: 0.3;
@@ -187,13 +196,14 @@
         <div style="margin-top:20px; padding-top:15px; border-top:2px dashed var(--border); font-size:0.85em; line-height:1.6; color:#888;">
             <div style="margin-bottom:5px;">📅 <b>小提醒：</b></div>
             • <span style="color:var(--holiday);">★ 紅字</span> 是國定假日喔<br>
+            • <span style="color:var(--weekend);">橘字</span> 是週末 (六、日)<br>
             • 綠色背景是正在編輯的週<br>
-            • 系統會自動扣除1小時 (12:00-13:00)  <br>
+            • 午休時間 (12:00-13:00) 系統會自動扣除 1 小時<br>
         </div>
     </div>
 
     <div class="card">
-        <h2 class="app-title">Elia 工時計算表</h2>
+        <h2 class="app-title">工時計算表</h2>
         
         <div class="panel-header">
             <div class="date-picker-group">
@@ -276,7 +286,7 @@
 
     // --- 2. 初始化 ---
     window.onload = function() {
-        const last = localStorage.getItem('elia_log_last');
+        const last = localStorage.getItem('worktime_log_last');
         if (last) {
             document.getElementById('weekStart').value = last;
             viewDate = new Date(last);
@@ -299,7 +309,7 @@
     function onWeekChange() {
         const val = document.getElementById('weekStart').value;
         if(val) {
-            localStorage.setItem('elia_log_last', val);
+            localStorage.setItem('worktime_log_last', val);
             viewDate = new Date(val);
             refreshAll();
         }
@@ -343,7 +353,6 @@
                 </div>
             `;
 
-            // 移除：<td>...-1H...</td>
             tr.innerHTML = `
                 <td style="text-align:left;">${dateHTML}</td>
                 <td><input type="time" class="inp-s" value="09:00" onchange="update()"></td>
@@ -428,7 +437,7 @@
 
     // --- 4. 存取 ---
     function saveData() {
-        const key = `elia_log_${document.getElementById('weekStart').value}`;
+        const key = `worktime_log_${document.getElementById('weekStart').value}`;
         const data = Array.from(document.querySelectorAll('#tbody tr')).map(tr => ({
             s: tr.querySelector('.inp-s').value,
             e: tr.querySelector('.inp-e').value,
@@ -439,7 +448,7 @@
     }
 
     function loadAndCalc(save = true) {
-        const key = `elia_log_${document.getElementById('weekStart').value}`;
+        const key = `worktime_log_${document.getElementById('weekStart').value}`;
         const json = localStorage.getItem(key);
         const rows = document.querySelectorAll('#tbody tr');
 
@@ -468,7 +477,7 @@
 
     function resetData() {
         if(confirm("要重置這週的資料嗎？")) {
-            const key = `elia_log_${document.getElementById('weekStart').value}`;
+            const key = `worktime_log_${document.getElementById('weekStart').value}`;
             localStorage.removeItem(key);
             loadAndCalc();
         }
@@ -510,6 +519,13 @@
                 div.classList.add('is-holiday');
                 div.title = hol;
             }
+
+            // 新增：判斷是否為六日
+            const dayOfWeek = dateObj.getDay();
+            if (dayOfWeek === 0 || dayOfWeek === 6) {
+                div.classList.add('is-weekend');
+            }
+
             if(wStart && iso >= curWeek && iso <= toISODate(wEnd)) {
                 div.classList.add('is-active-week');
             }
