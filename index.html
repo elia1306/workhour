@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Elia工時計算表 🌸</title>
+    <title>Elia 工時計算表</title>
     <style>
         :root {
             /* --- 可愛馬卡龍配色 --- */
@@ -22,12 +22,12 @@
         }
 
         body {
-            font-family: 'Comic Sans MS', '微軟正黑體', 'Segoe UI', sans-serif; /* 嘗試用圓潤一點的字體 */
+            font-family: 'Comic Sans MS', '微軟正黑體', 'Segoe UI', sans-serif;
             background-color: var(--bg);
             margin: 0;
             padding: 20px;
             color: var(--text);
-            background-image: radial-gradient(#ffeef0 2px, transparent 2px); /* 點點背景 */
+            background-image: radial-gradient(#ffeef0 2px, transparent 2px);
             background-size: 30px 30px;
         }
 
@@ -47,16 +47,15 @@
             background: var(--card-bg);
             padding: 25px;
             border-radius: var(--radius);
-            box-shadow: 0 10px 25px rgba(255, 154, 162, 0.15); /* 粉色柔和陰影 */
+            box-shadow: 0 10px 25px rgba(255, 154, 162, 0.15);
             border: 2px solid #FFF0F5;
         }
 
-        /* --- 左側月曆 (可愛版) --- */
+        /* --- 左側月曆 --- */
         .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         .calendar-header button { 
             background: var(--bg); border: 2px solid var(--primary); color: var(--primary);
             width: 30px; height: 30px; border-radius: 50%; cursor: pointer; font-weight: bold;
-            transition: 0.2s;
         }
         .calendar-header button:hover { background: var(--primary); color: white; }
         .calendar-title { font-weight: bold; font-size: 1.2em; color: var(--primary); letter-spacing: 1px; }
@@ -64,9 +63,9 @@
         .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; text-align: center; }
         .cal-head { font-size: 0.85em; color: #aaa; padding-bottom: 5px; font-weight: bold;}
         .cal-cell { 
-            padding: 10px 2px; font-size: 0.9em; border-radius: 12px; position: relative; cursor: pointer; transition: 0.2s;
+            padding: 10px 2px; font-size: 0.9em; border-radius: 12px; position: relative; cursor: pointer;
         }
-        .cal-cell:hover { background-color: #FFF0F5; transform: scale(1.1); }
+        .cal-cell:hover { background-color: #FFF0F5; } /* 移除 transform scale */
         
         .is-holiday { color: var(--holiday); font-weight: bold; }
         .is-holiday::after { content: '★'; font-size: 0.6em; display: block; margin-top: 2px; color: var(--holiday); }
@@ -74,7 +73,7 @@
         .is-active-week { background-color: #E2F0CB; color: #556B2F; font-weight: bold; border-radius: 12px; }
         .is-today { border: 2px dashed var(--primary); background: #FFF; }
 
-        /* --- 右側工時表 (可愛版) --- */
+        /* --- 右側工時表 --- */
         h2.app-title {
             margin: 0 0 20px 0; color: var(--primary); text-align: center; font-size: 1.8em;
             text-shadow: 2px 2px 0px #FFF0F5;
@@ -95,10 +94,10 @@
         .btn-google {
             background-color: #fff; color: #555; border: 2px solid #eee;
             padding: 8px 15px; border-radius: 20px; text-decoration: none; font-size: 0.9em;
-            display: inline-flex; align-items: center; gap: 8px; transition: 0.2s;
+            display: inline-flex; align-items: center; gap: 8px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
-        .btn-google:hover { border-color: var(--primary); color: var(--primary); transform: translateY(-2px); }
+        .btn-google:hover { border-color: var(--primary); color: var(--primary); } /* 移除 transform translateY */
         .btn-google img { width: 18px; height: 18px; }
 
         /* 表格樣式優化 */
@@ -113,9 +112,8 @@
         tbody tr { 
             background: white; 
             box-shadow: 0 2px 5px rgba(0,0,0,0.02);
-            transition: 0.2s;
         }
-        tbody tr:hover { transform: scale(1.01); }
+        /* 移除 tbody tr:hover 的 transform scale */
 
         td { padding: 12px 5px; text-align: center; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
         td:first-child { border-left: 1px solid var(--border); border-radius: 12px 0 0 12px; }
@@ -165,7 +163,7 @@
         
         .reset-btn {
             background: none; border: none; color: #aaa; cursor: pointer; 
-            font-size: 0.85em; margin-top: 15px; transition: 0.2s;
+            font-size: 0.85em; margin-top: 15px;
         }
         .reset-btn:hover { color: var(--holiday); text-decoration: underline; }
     </style>
@@ -182,14 +180,14 @@
         <div class="cal-grid" id="calGrid"></div>
         
         <div style="margin-top:20px; padding-top:15px; border-top:2px dashed var(--border); font-size:0.85em; line-height:1.6; color:#888;">
-            <div style="margin-bottom:5px;">📅 <b>Elia 的小提醒：</b></div>
+            <div style="margin-bottom:5px;">📅 <b>小提醒：</b></div>
             • <span style="color:var(--holiday);">★ 紅字</span> 是國定假日喔<br>
             • 綠色背景是正在編輯的週<br>
         </div>
     </div>
 
     <div class="card">
-        <h2 class="app-title">Elia 工時計算表</h2>
+        <h2 class="app-title">工時計算表</h2>
         
         <div class="panel-header">
             <div class="date-picker-group">
