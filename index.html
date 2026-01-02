@@ -5,36 +5,193 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>工時計算表</title>
     <style>
-        :root {
-            /* --- 可愛馬卡龍配色 --- */
-            --primary: #FF9AA2;       /* 柔和粉紅 (標題/按鈕) */
-            --primary-hover: #ff808b;
-            --accent: #B5EAD7;        /* 薄荷綠 (選取狀態/今天) */
-            --accent-text: #4a8a76;
-            --holiday: #FF6961;       /* 珊瑚紅 (假日文字) */
-            --holiday-bg: #FFF0F0;    /* 假日背景 (表格行) */
-            
-            /* 新增：月曆假日背景 (比表格行稍微深一點的粉紅，讓月曆更明顯) */
-            --holiday-cell-bg: #ffedea; 
+        /* =========================================
+           1. CSS 變數定義 (11 組風格)
+        ========================================= */
 
-            --weekend: #FFB74D;       /* 週末橘色 */
-            
-            --bg: #FFF9FA;            /* 極淡粉紅背景 */
+        /* --- 第 1 組: 米灰藍調 --- */
+        :root {
+            --bg: #F4F2EE;
             --card-bg: #FFFFFF;
-            --text: #6B5B5B;          /* 暖灰文字 (不刺眼) */
-            --border: #FFE5E5;
+            --text: #555555;
+
+            --primary: #6B9FBE;       
+            --primary-hover: #5a8ca8;
             
-            --radius: 20px;           /* 大圓角 */
+            --border: #C7D4DF;
+            --holiday-cell-bg: #C7D4DF; 
+
+            --accent: #C3D5BC;
+            --accent-text: #3e5238;
+
+            --holiday: #6B9FBE;
+            --weekend: #C3D5BC;
+
+            /* 統計卡片 */
+            --sum-bg-1: #6B9FBE; --sum-text-1: #fff;
+            --sum-bg-2: #C3D5BC; --sum-text-2: #3e5238;
+            --sum-bg-3: #C7D4DF; --sum-text-3: #555;
         }
 
+        /* --- 第 2 組: 復古草綠 --- */
+        body.theme-2 {
+            --bg: #F0F4F8;
+            --border: #C3CCD8;
+            --primary: #96AB91; --primary-hover: #7d9178;
+            --holiday-cell-bg: #E2CDCC;
+            --holiday: #b07d7b;
+            --accent: #E3E5B7; --accent-text: #5c613b;
+            --weekend: #E2CDCC;
+            --sum-bg-1: #96AB91; --sum-text-1: #fff;
+            --sum-bg-2: #E3E5B7; --sum-text-2: #5c613b;
+            --sum-bg-3: #E2CDCC; --sum-text-3: #555;
+        }
+
+        /* --- 第 3 組: 煙燻丹寧 --- */
+        body.theme-3 {
+            --bg: #F9E1D6;
+            --border: #E2C4CB;
+            --primary: #5C7CA8; --primary-hover: #4a668a;
+            --accent: #ABADCB; --accent-text: #fff;
+            --holiday-cell-bg: #E2C4CB;
+            --holiday: #5C7CA8;
+            --weekend: #ABADCB;
+            --sum-bg-1: #5C7CA8; --sum-text-1: #fff;
+            --sum-bg-2: #ABADCB; --sum-text-2: #fff;
+            --sum-bg-3: #E2C4CB; --sum-text-3: #555;
+        }
+
+        /* --- 第 4 組: 清透天藍 --- */
+        body.theme-4 {
+            --bg: #E9EDF2;
+            --border: #BFBDD1;
+            --primary: #80AFD8; --primary-hover: #6b9ac2;
+            --accent: #A9CCE1; --accent-text: #2c4a5e;
+            --holiday-cell-bg: #BFBDD1;
+            --holiday: #80AFD8;
+            --weekend: #A9CCE1;
+            --sum-bg-1: #80AFD8; --sum-text-1: #fff;
+            --sum-bg-2: #A9CCE1; --sum-text-2: #2c4a5e;
+            --sum-bg-3: #BFBDD1; --sum-text-3: #fff;
+        }
+
+        /* --- 第 5 組: 豆沙玫瑰 --- */
+        body.theme-5 {
+            --bg: #EDE3D2;
+            --border: #E7CDBA;
+            --primary: #B66D79; --primary-hover: #9e5b66;
+            --accent: #E7BDB9; --accent-text: #5e3b37;
+            --holiday-cell-bg: #E7BDB9;
+            --holiday: #B66D79;
+            --weekend: #E7CDBA;
+            --sum-bg-1: #B66D79; --sum-text-1: #fff;
+            --sum-bg-2: #E7BDB9; --sum-text-2: #5e3b37;
+            --sum-bg-3: #E7CDBA; --sum-text-3: #5e3b37;
+        }
+
+        /* --- 第 6 組: 薄荷土耳其 --- */
+        body.theme-6 {
+            --bg: #F4F3E8;
+            --border: #E7BDC1;
+            --primary: #61C6D8; --primary-hover: #4db3c5;
+            --accent: #C0E6E2; --accent-text: #3a635f;
+            --holiday-cell-bg: #E7BDC1;
+            --holiday: #d17b83;
+            --weekend: #61C6D8;
+            --sum-bg-1: #61C6D8; --sum-text-1: #fff;
+            --sum-bg-2: #C0E6E2; --sum-text-2: #3a635f;
+            --sum-bg-3: #E7BDC1; --sum-text-3: #555;
+        }
+
+        /* --- 第 7 組: 活力珊瑚橘 --- */
+        body.theme-7 {
+            --bg: #FDEAD8;
+            --border: #FEC5C0;
+            --primary: #E090A2; --primary-hover: #c97a8b;
+            --accent: #FDC192; --accent-text: #6b422a;
+            --holiday-cell-bg: #FEC5C0;
+            --holiday: #E090A2;
+            --weekend: #FDC192;
+            --sum-bg-1: #E090A2; --sum-text-1: #fff;
+            --sum-bg-2: #FDC192; --sum-text-2: #6b422a;
+            --sum-bg-3: #FEC5C0; --sum-text-3: #555;
+        }
+
+        /* --- 第 8 組: 青瓷萊姆綠 --- */
+        body.theme-8 {
+            --bg: #E6F3EB;
+            --border: #AED7C6;
+            --primary: #E7B6AB; --primary-hover: #d19e93;
+            --accent: #CCE28D; --accent-text: #5a6636;
+            --holiday-cell-bg: #E7B6AB;
+            --holiday: #d68978;
+            --weekend: #CCE28D;
+            --sum-bg-1: #E7B6AB; --sum-text-1: #fff;
+            --sum-bg-2: #CCE28D; --sum-text-2: #5a6636;
+            --sum-bg-3: #AED7C6; --sum-text-3: #555;
+        }
+
+        /* --- 第 9 組: 莫蘭迪灰粉 --- */
+        body.theme-9 {
+            --bg: #D8E4E3;
+            --border: #EBC5C6;
+            --primary: #96ABBE; --primary-hover: #7d91a3;
+            --accent: #E0AA97; --accent-text: #fff;
+            --holiday-cell-bg: #EBC5C6;
+            --holiday: #c98587;
+            --weekend: #E0AA97;
+            --sum-bg-1: #96ABBE; --sum-text-1: #fff;
+            --sum-bg-2: #E0AA97; --sum-text-2: #fff;
+            --sum-bg-3: #EBC5C6; --sum-text-3: #555;
+        }
+
+        /* --- 第 10 組: 霧霾紫羅蘭 --- */
+        body.theme-10 {
+            --bg: #F1F2F6;
+            --border: #EDD3D3;
+            --primary: #C7C6DF; --primary-hover: #aeadc9;
+            --accent: #CBDCE2; --accent-text: #4a5c63;
+            --holiday-cell-bg: #EDD3D3;
+            --holiday: #b08d8d;
+            --weekend: #C7C6DF;
+            --sum-bg-1: #C7C6DF; --sum-text-1: #fff;
+            --sum-bg-2: #CBDCE2; --sum-text-2: #4a5c63;
+            --sum-bg-3: #EDD3D3; --sum-text-3: #555;
+        }
+
+        /* --- 第 11 組: 粉嫩糖果 --- */
+        /* #f582ae, #8bd3dd, #ffc6c7, #bae8e8 */
+        body.theme-11 {
+            --bg: #FFF5F7; /* 極淡粉 */
+            --border: #ffc6c7;
+            
+            --primary: #f582ae; 
+            --primary-hover: #d66d96;
+
+            --accent: #bae8e8;
+            --accent-text: #555;
+
+            --holiday-cell-bg: #ffc6c7;
+            --holiday: #f582ae;
+            --weekend: #8bd3dd;
+
+            --sum-bg-1: #f582ae; --sum-text-1: #fff;
+            --sum-bg-2: #8bd3dd; --sum-text-2: #fff;
+            --sum-bg-3: #bae8e8; --sum-text-3: #555;
+        }
+
+
+        /* =========================================
+           2. 全域樣式
+        ========================================= */
         body {
             font-family: 'Comic Sans MS', '微軟正黑體', 'Segoe UI', sans-serif;
             background-color: var(--bg);
             margin: 0;
             padding: 20px;
             color: var(--text);
-            background-image: radial-gradient(#ffeef0 2px, transparent 2px);
-            background-size: 30px 30px;
+            background-image: none; 
+            transition: background-color 0.3s, color 0.3s;
         }
 
         .main-layout {
@@ -52,48 +209,113 @@
         .card {
             background: var(--card-bg);
             padding: 25px;
-            border-radius: var(--radius);
-            box-shadow: 0 10px 25px rgba(255, 154, 162, 0.15);
-            border: 2px solid #FFF0F5;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            border: 2px solid var(--border);
+            transition: border-color 0.3s, background-color 0.3s;
         }
 
         /* --- 左側月曆 --- */
         .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         .calendar-header button { 
-            background: var(--bg); border: 2px solid var(--primary); color: var(--primary);
+            background: var(--card-bg); border: 2px solid var(--primary); color: var(--primary);
             width: 30px; height: 30px; border-radius: 50%; cursor: pointer; font-weight: bold;
         }
-        .calendar-header button:hover { background: var(--primary); color: white; }
+        .calendar-header button:hover { background: var(--primary); color: var(--card-bg); }
         .calendar-title { font-weight: bold; font-size: 1.2em; color: var(--primary); letter-spacing: 1px; }
         
         .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; text-align: center; }
-        .cal-head { font-size: 0.85em; color: #aaa; padding-bottom: 5px; font-weight: bold;}
+        .cal-head { font-size: 0.85em; opacity: 0.7; padding-bottom: 5px; font-weight: bold;}
         .cal-cell { 
             padding: 10px 2px; font-size: 0.9em; border-radius: 12px; position: relative; cursor: pointer;
+            border: 1px solid transparent;
         }
-        .cal-cell:hover { background-color: #FFF0F5; }
+        .cal-cell:hover { border-color: var(--primary); }
         
-        /* 週末樣式 */
+        /* 週末與假日樣式 */
         .is-weekend { color: var(--weekend); font-weight: bold; }
-
-        /* 修改：假日樣式 (加入背景色) */
         .is-holiday { 
-            background-color: var(--holiday-cell-bg); /* 新增背景色 */
+            background-color: var(--holiday-cell-bg); 
             color: var(--holiday); 
             font-weight: bold; 
         }
-        .is-holiday::after { content: '★'; font-size: 0.6em; display: block; margin-top: 2px; color: var(--holiday); }
         
-        /* 選中週 (綠色) - 權重較高，會覆蓋假日的粉紅底，這很合理(編輯中狀態) */
-        .is-active-week { background-color: #E2F0CB; color: #556B2F; font-weight: bold; border-radius: 12px; }
-        .is-active-week.is-weekend { color: #556B2F; } 
+        /* 修改：原本的 '★' 改為 '假' */
+        .is-holiday::after { 
+            content: '假'; 
+            font-size: 0.7em; 
+            display: block; 
+            margin-top: 2px; 
+            color: var(--holiday); 
+        }
         
-        .is-today { border: 2px dashed var(--primary); background: #FFF; }
+        /* 選中週 */
+        .is-active-week { background-color: var(--accent) !important; color: var(--accent-text) !important; font-weight: bold; border-radius: 12px; }
+        
+        .is-today { border: 2px dashed var(--primary); }
+
+        /* --- 小提醒區塊樣式 --- */
+        .reminder-box {
+            margin-top: 20px; 
+            padding-top: 15px; 
+            border-top: 2px dashed var(--border); 
+            font-size: 0.85em; 
+            line-height: 1.8; 
+            opacity: 0.9;
+        }
+        
+        /* 小提醒指示器 */
+        .indicator-holiday { 
+            display: inline-block;
+            color: var(--holiday); 
+            background: var(--holiday-cell-bg); 
+            padding: 1px 6px; 
+            border-radius: 6px; 
+            font-weight: bold;
+            font-size: 0.9em;
+            margin-right: 4px;
+        }
+        .indicator-active { 
+            display: inline-block;
+            background: var(--accent); 
+            color: var(--accent-text); 
+            padding: 1px 6px; 
+            border-radius: 6px; 
+            font-weight: bold; 
+            font-size: 0.9em;
+            margin-right: 4px;
+        }
+
+        /* 風格切換選單 */
+        .theme-switcher-container {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid var(--border);
+            font-size: 0.9em;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        #theme-select {
+            width: 100%;
+            padding: 8px;
+            border-radius: 10px;
+            border: 2px solid var(--border);
+            background-color: var(--bg);
+            color: var(--text);
+            outline: none;
+            cursor: pointer;
+            font-size: 1em;
+        }
+
 
         /* --- 右側工時表 --- */
         h2.app-title {
             margin: 0 0 20px 0; color: var(--primary); text-align: center; font-size: 1.8em;
-            text-shadow: 2px 2px 0px #FFF0F5;
         }
 
         .panel-header {
@@ -101,32 +323,33 @@
             margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px dashed var(--border);
         }
         
-        .date-picker-group label { display: block; font-size: 0.9em; color: #888; margin-bottom: 5px; font-weight: bold; }
+        .date-picker-group label { display: block; font-size: 0.9em; opacity: 0.8; margin-bottom: 5px; font-weight: bold; }
         input[type="date"] { 
             padding: 8px 12px; border: 2px solid var(--border); border-radius: 12px; 
-            font-size: 1em; color: var(--text); outline: none; background: #FFF;
+            font-size: 1em; color: var(--text); outline: none; background: var(--card-bg);
         }
         input[type="date"]:focus { border-color: var(--primary); }
 
         .btn-google {
-            background-color: #fff; color: #555; border: 2px solid #eee;
+            background-color: var(--card-bg); color: var(--text); border: 2px solid var(--border);
             padding: 8px 15px; border-radius: 20px; text-decoration: none; font-size: 0.9em;
             display: inline-flex; align-items: center; gap: 8px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            opacity: 0.9;
         }
-        .btn-google:hover { border-color: var(--primary); color: var(--primary); }
+        .btn-google:hover { border-color: var(--primary); color: var(--primary); opacity: 1; }
         .btn-google img { width: 18px; height: 18px; }
 
-        /* 表格樣式優化 */
+        /* 表格樣式 */
         table { width: 100%; border-collapse: separate; border-spacing: 0 8px; margin-bottom: 10px; }
         
         th { 
-            color: #888; padding: 10px; font-size: 0.9em; font-weight: bold;
+            color: var(--text); opacity: 0.8; padding: 10px; font-size: 0.9em; font-weight: bold;
             border-bottom: 2px solid var(--border);
         }
 
         tbody tr { 
-            background: white; 
+            background: var(--card-bg); 
             box-shadow: 0 2px 5px rgba(0,0,0,0.02);
         }
 
@@ -138,12 +361,11 @@
             display: flex; align-items: center; justify-content: flex-start; gap: 8px; padding-left: 10px;
         }
         .date-main { font-size: 1.1em; font-weight: bold; color: var(--text); }
-        .date-day { font-size: 0.9em; color: #aaa; background: #f5f5f5; padding: 2px 8px; border-radius: 10px; }
-        .tag-holiday { font-size: 0.8em; padding: 3px 8px; background: var(--holiday); color: white; border-radius: 15px; white-space: nowrap; box-shadow: 1px 1px 3px rgba(0,0,0,0.1); }
+        .date-day { font-size: 0.9em; opacity: 0.7; background: var(--bg); padding: 2px 8px; border-radius: 10px; }
+        .tag-holiday { font-size: 0.8em; padding: 3px 8px; background: var(--holiday); color: var(--card-bg); border-radius: 15px; white-space: nowrap; box-shadow: 1px 1px 3px rgba(0,0,0,0.1); }
 
-        /* 狀態顏色 */
-        tr.mode-holiday td { background-color: var(--holiday-bg); border-color: #ffd6d6; }
-        tr.mode-leave td { background-color: #F0FFF4; border-color: #d6ffe0; }
+        tr.mode-holiday td { background-color: var(--holiday-cell-bg); }
+        tr.mode-leave td { background-color: var(--bg); }
         
         input { font-family: inherit; }
         
@@ -151,42 +373,50 @@
             background-color: transparent !important;
             opacity: 0.3;
             cursor: not-allowed;
-            color: #aaa;
+            color: var(--text);
         }
 
-        input[type="time"] { 
-            padding: 6px; border: 1px solid #ddd; border-radius: 10px; width: 90px; 
-            text-align: center; background: #fdfdfd; color: var(--text);
+        input[type="time"], input[type="number"] { 
+            padding: 6px; border: 1px solid var(--border); border-radius: 10px;
+            text-align: center; background: var(--bg); color: var(--text); outline: none;
         }
+        input[type="time"]:focus, input[type="number"]:focus { border-color: var(--primary); }
+        
+        input[type="time"] { width: 90px; }
         input.leave-inp { 
-            width: 50px; padding: 6px; border: 1px solid var(--accent); border-radius: 10px; 
-            text-align: center; color: var(--accent-text); font-weight: bold; background: #fafffc;
+            width: 50px; border: 1px solid var(--accent);
+            color: var(--accent-text); font-weight: bold; background: var(--bg);
         }
         input[type="checkbox"] { 
-            appearance: none; width: 20px; height: 20px; border: 2px solid #ddd; border-radius: 6px; cursor: pointer; position: relative;
+            appearance: none; width: 20px; height: 20px; border: 2px solid var(--border); border-radius: 6px; cursor: pointer; position: relative;
+            background: var(--bg);
         }
         input[type="checkbox"]:checked { background-color: var(--holiday); border-color: var(--holiday); }
         input[type="checkbox"]:checked::after { content: '✔'; color: white; position: absolute; left: 3px; top: -1px; font-size: 14px;}
 
+        /* --- 底部統計 --- */
         .summary {
             display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 20px;
         }
         .sum-card {
-            padding: 15px; border-radius: 15px; color: white; text-align: center;
+            padding: 15px; border-radius: 15px; text-align: center;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
-        .bg-pink { background: linear-gradient(135deg, #FF9AA2, #FFB7B2); }
-        .bg-mint { background: linear-gradient(135deg, #B5EAD7, #95d6c0); color: #3e705d; }
-        .bg-yellow { background: linear-gradient(135deg, #FFDAC1, #FFDFD3); color: #8a6b4e; }
+        /* 第一張卡片 (本週工時 - 用最深色) */
+        .sum-card:nth-child(1) { background-color: var(--sum-bg-1); color: var(--sum-text-1); }
+        /* 第二張卡片 (距離 40H - 用強調色) */
+        .sum-card:nth-child(2) { background-color: var(--sum-bg-2); color: var(--sum-text-2); }
+        /* 第三張卡片 (週五下班 - 用次淺色) */
+        .sum-card:nth-child(3) { background-color: var(--sum-bg-3); color: var(--sum-text-3); }
 
         .sum-val { font-size: 1.6em; font-weight: bold; margin-top: 5px; }
         .sum-lbl { font-size: 0.9em; opacity: 0.9; }
         
         .reset-btn {
-            background: none; border: none; color: #aaa; cursor: pointer; 
+            background: none; border: none; color: var(--text); opacity: 0.6; cursor: pointer; 
             font-size: 0.85em; margin-top: 15px;
         }
-        .reset-btn:hover { color: var(--holiday); text-decoration: underline; }
+        .reset-btn:hover { color: var(--holiday); opacity: 1; text-decoration: underline; }
     </style>
 </head>
 <body>
@@ -200,24 +430,40 @@
         </div>
         <div class="cal-grid" id="calGrid"></div>
         
-        <div style="margin-top:20px; padding-top:15px; border-top:2px dashed var(--border); font-size:0.85em; line-height:1.6; color:#888;">
+        <div class="reminder-box">
             <div style="margin-bottom:5px;">📅 <b>小提醒：</b></div>
-            • <span style="color:var(--holiday); background:var(--holiday-cell-bg); padding:0 4px; border-radius:4px;">粉紅底</span> 是國定假日<br>
-            • <span style="color:var(--weekend);">橘字</span> 是週末 (六、日)<br>
-            • 綠色背景是正在編輯的週<br>
-            • 午休時間 (12:00-13:00) 系統會自動扣除 1 小時<br>
+            • <span class="indicator-holiday">假</span> 是國定假日<br>
+            • <span class="indicator-active">編輯中</span> 是正在編輯的週<br>
+            • 系統會自動扣除 1 小時 (12:00-13:00)<br>
+        </div>
+
+        <div class="theme-switcher-container">
+            <div style="width:100%; text-align:left; font-weight:bold; margin-bottom:5px;">🎨 選擇風格：</div>
+            <select id="theme-select" onchange="changeTheme(this.value)">
+                <option value="default">1. 米灰藍調</option>
+                <option value="theme-2">2. 復古草綠</option>
+                <option value="theme-3">3. 煙燻丹寧</option>
+                <option value="theme-4">4. 清透天藍</option>
+                <option value="theme-5">5. 豆沙玫瑰</option>
+                <option value="theme-6">6. 薄荷土耳其</option>
+                <option value="theme-7">7. 活力珊瑚橘</option>
+                <option value="theme-8">8. 青瓷萊姆綠</option>
+                <option value="theme-9">9. 莫蘭迪灰粉</option>
+                <option value="theme-10">10. 霧霾紫羅蘭</option>
+                <option value="theme-11">11. 粉嫩糖果</option>
+            </select>
         </div>
     </div>
 
     <div class="card">
-        <h2 class="app-title">工時計算表</h2>
+        <h2 class="app-title">Eliaの工時計算表</h2>
         
         <div class="panel-header">
             <div class="date-picker-group">
                 <label>選擇本週 (週一)</label>
                 <div style="display:flex; gap:10px;">
                     <input type="date" id="weekStart" onchange="onWeekChange()">
-                    <button onclick="jumpToToday()" style="background:var(--accent); border:none; border-radius:10px; color:#3e705d; cursor:pointer; padding:0 12px; font-weight:bold;">今天</button>
+                    <button onclick="jumpToToday()" style="background:var(--accent); border:none; border-radius:10px; color:var(--accent-text); cursor:pointer; padding:0 12px; font-weight:bold;">今天</button>
                 </div>
             </div>
             
@@ -242,15 +488,15 @@
         </table>
 
         <div class="summary">
-            <div class="sum-card bg-pink">
+            <div class="sum-card">
                 <div class="sum-lbl">本週工時</div>
                 <div class="sum-val" id="sumTotal">0.00</div>
             </div>
-            <div class="sum-card bg-mint">
+            <div class="sum-card">
                 <div class="sum-lbl">距離 40H</div>
                 <div class="sum-val" id="sumLeft">0.00</div>
             </div>
-            <div class="sum-card bg-yellow">
+            <div class="sum-card">
                 <div class="sum-lbl">週五下班</div>
                 <div class="sum-val" id="predict">--:--</div>
             </div>
@@ -263,6 +509,22 @@
 </div>
 
 <script>
+    // --- 0. 風格切換邏輯 ---
+    function changeTheme(theme) {
+        localStorage.setItem('worktime_theme', theme);
+        applyTheme(theme);
+    }
+
+    function applyTheme(theme) {
+        // 移除所有可能的風格 class
+        document.body.className = ''; 
+        
+        // 如果不是預設，就加上對應的 class
+        if (theme !== 'default') {
+            document.body.classList.add(theme);
+        }
+    }
+
     // --- 1. 內建國定假日 (2025-2026) ---
     const HOLIDAYS_DB = {
         '2025': {
@@ -293,6 +555,11 @@
 
     // --- 2. 初始化 ---
     window.onload = function() {
+        // 載入風格
+        const savedTheme = localStorage.getItem('worktime_theme') || 'default';
+        document.getElementById('theme-select').value = savedTheme;
+        applyTheme(savedTheme);
+
         const last = localStorage.getItem('worktime_log_last');
         if (last) {
             document.getElementById('weekStart').value = last;
