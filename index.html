@@ -3,179 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>工時計算表 (完整修復版)</title>
+    <title>工時計算表</title>
     <style>
         /* =========================================
-           1. CSS 變數定義 (完整 11 組風格)
+           1. CSS 變數定義 (11 組風格)
         ========================================= */
-
-        /* --- 第 1 組: 米灰藍調 (預設) --- */
         :root {
             --bg: #F4F2EE;
             --card-bg: #FFFFFF;
             --text: #555555;
-
             --primary: #6B9FBE;        
             --primary-hover: #5a8ca8;
-            
             --border: #C7D4DF;
             --holiday-cell-bg: #C7D4DF; 
-
             --accent: #C3D5BC;
             --accent-text: #3e5238;
-
             --holiday: #6B9FBE;
             --weekend: #C3D5BC;
-
-            /* 統計卡片 */
             --sum-bg-1: #6B9FBE; --sum-text-1: #fff;
             --sum-bg-2: #C3D5BC; --sum-text-2: #3e5238;
             --sum-bg-3: #C7D4DF; --sum-text-3: #555;
         }
 
-        /* --- 第 2 組: 復古草綠 --- */
-        body.theme-2 {
-            --bg: #F0F4F8;
-            --border: #C3CCD8;
-            --primary: #96AB91; --primary-hover: #7d9178;
-            --holiday-cell-bg: #E2CDCC;
-            --holiday: #b07d7b;
-            --accent: #E3E5B7; --accent-text: #5c613b;
-            --weekend: #E2CDCC;
-            --sum-bg-1: #96AB91; --sum-text-1: #fff;
-            --sum-bg-2: #E3E5B7; --sum-text-2: #5c613b;
-            --sum-bg-3: #E2CDCC; --sum-text-3: #555;
-        }
-
-        /* --- 第 3 組: 煙燻丹寧 --- */
-        body.theme-3 {
-            --bg: #F9E1D6;
-            --border: #E2C4CB;
-            --primary: #5C7CA8; --primary-hover: #4a668a;
-            --accent: #ABADCB; --accent-text: #fff;
-            --holiday-cell-bg: #E2C4CB;
-            --holiday: #5C7CA8;
-            --weekend: #ABADCB;
-            --sum-bg-1: #5C7CA8; --sum-text-1: #fff;
-            --sum-bg-2: #ABADCB; --sum-text-2: #fff;
-            --sum-bg-3: #E2C4CB; --sum-text-3: #555;
-        }
-
-        /* --- 第 4 組: 清透天藍 --- */
-        body.theme-4 {
-            --bg: #E9EDF2;
-            --border: #BFBDD1;
-            --primary: #80AFD8; --primary-hover: #6b9ac2;
-            --accent: #A9CCE1; --accent-text: #2c4a5e;
-            --holiday-cell-bg: #BFBDD1;
-            --holiday: #80AFD8;
-            --weekend: #A9CCE1;
-            --sum-bg-1: #80AFD8; --sum-text-1: #fff;
-            --sum-bg-2: #A9CCE1; --sum-text-2: #2c4a5e;
-            --sum-bg-3: #BFBDD1; --sum-text-3: #fff;
-        }
-
-        /* --- 第 5 組: 豆沙玫瑰 --- */
+        /* --- 其他風格 --- */
+        body.theme-2 { --bg: #F0F4F8; --border: #C3CCD8; --primary: #96AB91; --primary-hover: #7d9178; --holiday-cell-bg: #E2CDCC; --holiday: #b07d7b; --accent: #E3E5B7; --accent-text: #5c613b; --weekend: #E2CDCC; --sum-bg-1: #96AB91; --sum-text-1: #fff; --sum-bg-2: #E3E5B7; --sum-text-2: #5c613b; --sum-bg-3: #E2CDCC; --sum-text-3: #555; }
+        
+        /* Theme 3 原本 accent-text 是白色，會導致請假看不到字，現在程式碼已修正讀取變數 */
+        body.theme-3 { --bg: #F9E1D6; --border: #E2C4CB; --primary: #5C7CA8; --primary-hover: #4a668a; --accent: #ABADCB; --accent-text: #fff; --holiday-cell-bg: #E2C4CB; --holiday: #5C7CA8; --weekend: #ABADCB; --sum-bg-1: #5C7CA8; --sum-text-1: #fff; --sum-bg-2: #ABADCB; --sum-text-2: #fff; --sum-bg-3: #E2C4CB; --sum-text-3: #555; }
+        
+        body.theme-4 { --bg: #E9EDF2; --border: #BFBDD1; --primary: #80AFD8; --primary-hover: #6b9ac2; --accent: #A9CCE1; --accent-text: #2c4a5e; --holiday-cell-bg: #BFBDD1; --holiday: #80AFD8; --weekend: #A9CCE1; --sum-bg-1: #80AFD8; --sum-text-1: #fff; --sum-bg-2: #A9CCE1; --sum-text-2: #2c4a5e; --sum-bg-3: #BFBDD1; --sum-text-3: #fff; }
+        
+        /* !!! 修改重點：Theme 5 豆沙玫瑰 !!!
+           --weekend: 改為較深的紅棕色 (#BFA596)，與編輯週區隔。
+           --accent: 改為極淡的粉色 (#F9E8E8)，作為編輯週背景更柔和。
+        */
         body.theme-5 {
             --bg: #EDE3D2;
             --border: #E7CDBA;
             --primary: #B66D79; --primary-hover: #9e5b66;
-            --accent: #E7BDB9; --accent-text: #5e3b37;
+            
+            --accent: #F9E8E8; /* 編輯週背景 (變淡) */
+            --accent-text: #5e3b37;
+            
             --holiday-cell-bg: #E7BDB9;
             --holiday: #B66D79;
-            --weekend: #E7CDBA;
+            
+            --weekend: #BFA596; /* 週末顏色 (變深) */
+            
             --sum-bg-1: #B66D79; --sum-text-1: #fff;
             --sum-bg-2: #E7BDB9; --sum-text-2: #5e3b37;
             --sum-bg-3: #E7CDBA; --sum-text-3: #5e3b37;
         }
 
-        /* --- 第 6 組: 薄荷土耳其 --- */
-        body.theme-6 {
-            --bg: #F4F3E8;
-            --border: #E7BDC1;
-            --primary: #61C6D8; --primary-hover: #4db3c5;
-            --accent: #C0E6E2; --accent-text: #3a635f;
-            --holiday-cell-bg: #E7BDC1;
-            --holiday: #d17b83;
-            --weekend: #61C6D8;
-            --sum-bg-1: #61C6D8; --sum-text-1: #fff;
-            --sum-bg-2: #C0E6E2; --sum-text-2: #3a635f;
-            --sum-bg-3: #E7BDC1; --sum-text-3: #555;
-        }
-
-        /* --- 第 7 組: 活力珊瑚橘 --- */
-        body.theme-7 {
-            --bg: #FDEAD8;
-            --border: #FEC5C0;
-            --primary: #E090A2; --primary-hover: #c97a8b;
-            --accent: #FDC192; --accent-text: #6b422a;
-            --holiday-cell-bg: #FEC5C0;
-            --holiday: #E090A2;
-            --weekend: #FDC192;
-            --sum-bg-1: #E090A2; --sum-text-1: #fff;
-            --sum-bg-2: #FDC192; --sum-text-2: #6b422a;
-            --sum-bg-3: #FEC5C0; --sum-text-3: #555;
-        }
-
-        /* --- 第 8 組: 青瓷萊姆綠 --- */
-        body.theme-8 {
-            --bg: #E6F3EB;
-            --border: #AED7C6;
-            --primary: #E7B6AB; --primary-hover: #d19e93;
-            --accent: #CCE28D; --accent-text: #5a6636;
-            --holiday-cell-bg: #E7B6AB;
-            --holiday: #d68978;
-            --weekend: #CCE28D;
-            --sum-bg-1: #E7B6AB; --sum-text-1: #fff;
-            --sum-bg-2: #CCE28D; --sum-text-2: #5a6636;
-            --sum-bg-3: #AED7C6; --sum-text-3: #555;
-        }
-
-        /* --- 第 9 組: 莫蘭迪灰粉 --- */
-        body.theme-9 {
-            --bg: #D8E4E3;
-            --border: #EBC5C6;
-            --primary: #96ABBE; --primary-hover: #7d91a3;
-            --accent: #E0AA97; --accent-text: #fff;
-            --holiday-cell-bg: #EBC5C6;
-            --holiday: #c98587;
-            --weekend: #E0AA97;
-            --sum-bg-1: #96ABBE; --sum-text-1: #fff;
-            --sum-bg-2: #E0AA97; --sum-text-2: #fff;
-            --sum-bg-3: #EBC5C6; --sum-text-3: #555;
-        }
-
-        /* --- 第 10 組: 霧霾紫羅蘭 --- */
-        body.theme-10 {
-            --bg: #F1F2F6;
-            --border: #EDD3D3;
-            --primary: #C7C6DF; --primary-hover: #aeadc9;
-            --accent: #CBDCE2; --accent-text: #4a5c63;
-            --holiday-cell-bg: #EDD3D3;
-            --holiday: #b08d8d;
-            --weekend: #C7C6DF;
-            --sum-bg-1: #C7C6DF; --sum-text-1: #fff;
-            --sum-bg-2: #CBDCE2; --sum-text-2: #4a5c63;
-            --sum-bg-3: #EDD3D3; --sum-text-3: #555;
-        }
-
-        /* --- 第 11 組: 粉嫩糖果 --- */
-        body.theme-11 {
-            --bg: #FFF5F7;
-            --border: #ffc6c7;
-            --primary: #f582ae; 
-            --primary-hover: #d66d96;
-            --accent: #bae8e8; --accent-text: #555;
-            --holiday-cell-bg: #ffc6c7;
-            --holiday: #f582ae;
-            --weekend: #8bd3dd;
-            --sum-bg-1: #f582ae; --sum-text-1: #fff;
-            --sum-bg-2: #8bd3dd; --sum-text-2: #fff;
-            --sum-bg-3: #bae8e8; --sum-text-3: #555;
-        }
+        body.theme-6 { --bg: #F4F3E8; --border: #E7BDC1; --primary: #61C6D8; --primary-hover: #4db3c5; --accent: #C0E6E2; --accent-text: #3a635f; --holiday-cell-bg: #E7BDC1; --holiday: #d17b83; --weekend: #61C6D8; --sum-bg-1: #61C6D8; --sum-text-1: #fff; --sum-bg-2: #C0E6E2; --sum-text-2: #3a635f; --sum-bg-3: #E7BDC1; --sum-text-3: #555; }
+        body.theme-7 { --bg: #FDEAD8; --border: #FEC5C0; --primary: #E090A2; --primary-hover: #c97a8b; --accent: #FDC192; --accent-text: #6b422a; --holiday-cell-bg: #FEC5C0; --holiday: #E090A2; --weekend: #FDC192; --sum-bg-1: #E090A2; --sum-text-1: #fff; --sum-bg-2: #FDC192; --sum-text-2: #6b422a; --sum-bg-3: #FEC5C0; --sum-text-3: #555; }
+        body.theme-8 { --bg: #E6F3EB; --border: #AED7C6; --primary: #E7B6AB; --primary-hover: #d19e93; --accent: #CCE28D; --accent-text: #5a6636; --holiday-cell-bg: #E7B6AB; --holiday: #d68978; --weekend: #CCE28D; --sum-bg-1: #E7B6AB; --sum-text-1: #fff; --sum-bg-2: #CCE28D; --sum-text-2: #5a6636; --sum-bg-3: #AED7C6; --sum-text-3: #555; }
+        
+        /* Theme 9 原本 accent-text 也是白色 */
+        body.theme-9 { --bg: #D8E4E3; --border: #EBC5C6; --primary: #96ABBE; --primary-hover: #7d91a3; --accent: #E0AA97; --accent-text: #fff; --holiday-cell-bg: #EBC5C6; --holiday: #c98587; --weekend: #E0AA97; --sum-bg-1: #96ABBE; --sum-text-1: #fff; --sum-bg-2: #E0AA97; --sum-text-2: #fff; --sum-bg-3: #EBC5C6; --sum-text-3: #555; }
+        
+        body.theme-10 { --bg: #F1F2F6; --border: #EDD3D3; --primary: #C7C6DF; --primary-hover: #aeadc9; --accent: #CBDCE2; --accent-text: #4a5c63; --holiday-cell-bg: #EDD3D3; --holiday: #b08d8d; --weekend: #C7C6DF; --sum-bg-1: #C7C6DF; --sum-text-1: #fff; --sum-bg-2: #CBDCE2; --sum-text-2: #4a5c63; --sum-bg-3: #EDD3D3; --sum-text-3: #555; }
+        body.theme-11 { --bg: #FFF5F7; --border: #ffc6c7; --primary: #f582ae; --primary-hover: #d66d96; --accent: #bae8e8; --accent-text: #555; --holiday-cell-bg: #ffc6c7; --holiday: #f582ae; --weekend: #8bd3dd; --sum-bg-1: #f582ae; --sum-text-1: #fff; --sum-bg-2: #8bd3dd; --sum-text-2: #fff; --sum-bg-3: #bae8e8; --sum-text-3: #555; }
 
         /* =========================================
-           2. 全域樣式 (UI 修正部分)
+           2. 全域樣式 
         ========================================= */
         body {
             font-family: 'Comic Sans MS', '微軟正黑體', 'Segoe UI', sans-serif;
@@ -214,13 +105,28 @@
         }
         .cal-cell:hover { border-color: var(--primary); }
         
-        .is-weekend { color: var(--weekend); font-weight: bold; }
-        .is-holiday { background-color: var(--holiday-cell-bg); color: var(--holiday); font-weight: bold; }
-        .is-holiday::after { content: '假'; font-size: 0.7em; display: block; margin-top: 2px; color: var(--holiday); }
+        .is-weekend { 
+            color: var(--weekend); 
+            font-weight: bold; 
+        }
+
+        .is-holiday { 
+            background-color: var(--holiday-cell-bg); 
+            color: var(--holiday); 
+            font-weight: bold; 
+        }
+        .is-holiday::after { 
+            content: '假'; 
+            font-size: 0.7em; 
+            display: block; 
+            margin-top: 2px; 
+            color: var(--holiday); 
+        }
+
         .is-active-week { background-color: var(--accent) !important; color: var(--accent-text) !important; font-weight: bold; border-radius: 12px; }
         .is-today { border: 2px dashed var(--primary); }
 
-        /* --- 提醒區與切換 --- */
+        /* --- 提醒區 --- */
         .reminder-box { margin-top: 20px; padding-top: 15px; border-top: 2px dashed var(--border); font-size: 0.85em; line-height: 1.8; opacity: 0.9; }
         .indicator-holiday { display: inline-block; color: var(--holiday); background: var(--holiday-cell-bg); padding: 1px 6px; border-radius: 6px; font-weight: bold; font-size: 0.9em; margin-right: 4px; }
         .indicator-active { display: inline-block; background: var(--accent); color: var(--accent-text); padding: 1px 6px; border-radius: 6px; font-weight: bold; font-size: 0.9em; margin-right: 4px; }
@@ -259,10 +165,10 @@
         input:disabled { background-color: transparent !important; opacity: 0.3; cursor: not-allowed; color: var(--text); }
 
         /* =========================================
-           !重要修改! 時間與數字欄位樣式調整
+           !重要修改! 
         ========================================= */
         input[type="time"], input[type="number"] { 
-            padding: 6px; 
+            padding: 6px 2px;
             border: 1px solid var(--border); 
             border-radius: 10px;
             text-align: center; 
@@ -273,13 +179,23 @@
         }
         input[type="time"]:focus, input[type="number"]:focus { border-color: var(--primary); }
         
-        /* 加寬時間欄位 (120px) 避免 12H 制被切到 */
         input[type="time"] { 
-            width: 120px;  
-            letter-spacing: 0.5px;
+            width: 125px;  
+            font-size: 0.95em; 
         }
 
-        input.leave-inp { width: 50px; border: 1px solid var(--accent); color: var(--accent-text); font-weight: bold; background: var(--bg); }
+        /* !!! 修改重點：請假欄位文字顏色 !!!
+           原本 color: var(--accent-text);
+           改為 color: var(--primary); 
+           這樣即使在 Theme 3 等風格中，字也不會變白色 
+        */
+        input.leave-inp { 
+            width: 50px; 
+            border: 1px solid var(--accent); 
+            color: var(--primary); /* 改用主色，確保所有背景下都清楚 */
+            font-weight: bold; 
+            background: var(--bg); 
+        }
         
         input[type="checkbox"] { appearance: none; width: 20px; height: 20px; border: 2px solid var(--border); border-radius: 6px; cursor: pointer; position: relative; background: var(--bg); }
         input[type="checkbox"]:checked { background-color: var(--holiday); border-color: var(--holiday); }
@@ -388,15 +304,13 @@
 </div>
 
 <script>
-    // --- 0. 風格切換邏輯 ---
+    // --- 0. 風格切換 ---
     function changeTheme(theme) {
         localStorage.setItem('worktime_theme', theme);
         applyTheme(theme);
     }
     function applyTheme(theme) {
-        // 先清除所有 class
         document.body.className = ''; 
-        // 如果不是 default，加上對應的 class (這樣 CSS selector body.theme-2 就會生效)
         if (theme !== 'default') document.body.classList.add(theme);
     }
 
@@ -408,7 +322,6 @@
     async function fetchHolidays(year) {
         if (holidaysCache[year]) return holidaysCache[year];
 
-        // 使用 CDN 鏡像的行政院資料
         const url = `https://cdn.jsdelivr.net/gh/ruyut/TaiwanCalendar/data/${year}.json`;
         try {
             const response = await fetch(url);
@@ -686,15 +599,20 @@
             div.textContent = d;
             
             if(iso === today) div.classList.add('is-today');
+
             if(hol) {
                 div.classList.add('is-holiday');
                 div.title = hol;
             }
 
             const dayOfWeek = dateObj.getDay();
-            if (dayOfWeek === 0 || dayOfWeek === 6) div.classList.add('is-weekend');
+            if (dayOfWeek === 0 || dayOfWeek === 6) {
+                div.classList.add('is-weekend');
+            }
 
-            if(wStart && iso >= curWeek && iso <= toISODate(wEnd)) div.classList.add('is-active-week');
+            if(wStart && iso >= curWeek && iso <= toISODate(wEnd)) {
+                div.classList.add('is-active-week');
+            }
 
             fragment.appendChild(div);
         }
