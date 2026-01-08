@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>工時計算表</title>
+    <title>工時計算表 (最終完美版)</title>
     <style>
         /* =========================================
            1. CSS 變數定義 (11 組風格)
@@ -27,16 +27,10 @@
 
         /* --- 其他風格 --- */
         body.theme-2 { --bg: #F0F4F8; --border: #C3CCD8; --primary: #96AB91; --primary-hover: #7d9178; --holiday-cell-bg: #E2CDCC; --holiday: #b07d7b; --accent: #E3E5B7; --accent-text: #5c613b; --weekend: #E2CDCC; --sum-bg-1: #96AB91; --sum-text-1: #fff; --sum-bg-2: #E3E5B7; --sum-text-2: #5c613b; --sum-bg-3: #E2CDCC; --sum-text-3: #555; }
-        
-        /* Theme 3 原本 accent-text 是白色，會導致請假看不到字，現在程式碼已修正讀取變數 */
         body.theme-3 { --bg: #F9E1D6; --border: #E2C4CB; --primary: #5C7CA8; --primary-hover: #4a668a; --accent: #ABADCB; --accent-text: #fff; --holiday-cell-bg: #E2C4CB; --holiday: #5C7CA8; --weekend: #ABADCB; --sum-bg-1: #5C7CA8; --sum-text-1: #fff; --sum-bg-2: #ABADCB; --sum-text-2: #fff; --sum-bg-3: #E2C4CB; --sum-text-3: #555; }
-        
         body.theme-4 { --bg: #E9EDF2; --border: #BFBDD1; --primary: #80AFD8; --primary-hover: #6b9ac2; --accent: #A9CCE1; --accent-text: #2c4a5e; --holiday-cell-bg: #BFBDD1; --holiday: #80AFD8; --weekend: #A9CCE1; --sum-bg-1: #80AFD8; --sum-text-1: #fff; --sum-bg-2: #A9CCE1; --sum-text-2: #2c4a5e; --sum-bg-3: #BFBDD1; --sum-text-3: #fff; }
         
-        /* !!! 修改重點：Theme 5 豆沙玫瑰 !!!
-           --weekend: 改為較深的紅棕色 (#BFA596)，與編輯週區隔。
-           --accent: 改為極淡的粉色 (#F9E8E8)，作為編輯週背景更柔和。
-        */
+        /* Theme 5 豆沙玫瑰 (已優化配色) */
         body.theme-5 {
             --bg: #EDE3D2;
             --border: #E7CDBA;
@@ -58,10 +52,7 @@
         body.theme-6 { --bg: #F4F3E8; --border: #E7BDC1; --primary: #61C6D8; --primary-hover: #4db3c5; --accent: #C0E6E2; --accent-text: #3a635f; --holiday-cell-bg: #E7BDC1; --holiday: #d17b83; --weekend: #61C6D8; --sum-bg-1: #61C6D8; --sum-text-1: #fff; --sum-bg-2: #C0E6E2; --sum-text-2: #3a635f; --sum-bg-3: #E7BDC1; --sum-text-3: #555; }
         body.theme-7 { --bg: #FDEAD8; --border: #FEC5C0; --primary: #E090A2; --primary-hover: #c97a8b; --accent: #FDC192; --accent-text: #6b422a; --holiday-cell-bg: #FEC5C0; --holiday: #E090A2; --weekend: #FDC192; --sum-bg-1: #E090A2; --sum-text-1: #fff; --sum-bg-2: #FDC192; --sum-text-2: #6b422a; --sum-bg-3: #FEC5C0; --sum-text-3: #555; }
         body.theme-8 { --bg: #E6F3EB; --border: #AED7C6; --primary: #E7B6AB; --primary-hover: #d19e93; --accent: #CCE28D; --accent-text: #5a6636; --holiday-cell-bg: #E7B6AB; --holiday: #d68978; --weekend: #CCE28D; --sum-bg-1: #E7B6AB; --sum-text-1: #fff; --sum-bg-2: #CCE28D; --sum-text-2: #5a6636; --sum-bg-3: #AED7C6; --sum-text-3: #555; }
-        
-        /* Theme 9 原本 accent-text 也是白色 */
         body.theme-9 { --bg: #D8E4E3; --border: #EBC5C6; --primary: #96ABBE; --primary-hover: #7d91a3; --accent: #E0AA97; --accent-text: #fff; --holiday-cell-bg: #EBC5C6; --holiday: #c98587; --weekend: #E0AA97; --sum-bg-1: #96ABBE; --sum-text-1: #fff; --sum-bg-2: #E0AA97; --sum-text-2: #fff; --sum-bg-3: #EBC5C6; --sum-text-3: #555; }
-        
         body.theme-10 { --bg: #F1F2F6; --border: #EDD3D3; --primary: #C7C6DF; --primary-hover: #aeadc9; --accent: #CBDCE2; --accent-text: #4a5c63; --holiday-cell-bg: #EDD3D3; --holiday: #b08d8d; --weekend: #C7C6DF; --sum-bg-1: #C7C6DF; --sum-text-1: #fff; --sum-bg-2: #CBDCE2; --sum-text-2: #4a5c63; --sum-bg-3: #EDD3D3; --sum-text-3: #555; }
         body.theme-11 { --bg: #FFF5F7; --border: #ffc6c7; --primary: #f582ae; --primary-hover: #d66d96; --accent: #bae8e8; --accent-text: #555; --holiday-cell-bg: #ffc6c7; --holiday: #f582ae; --weekend: #8bd3dd; --sum-bg-1: #f582ae; --sum-text-1: #fff; --sum-bg-2: #8bd3dd; --sum-text-2: #fff; --sum-bg-3: #bae8e8; --sum-text-3: #555; }
 
@@ -115,6 +106,7 @@
             color: var(--holiday); 
             font-weight: bold; 
         }
+        /* 只有真正被標記為假日 (is-holiday) 才有 "假" 字 */
         .is-holiday::after { 
             content: '假'; 
             font-size: 0.7em; 
@@ -184,15 +176,11 @@
             font-size: 0.95em; 
         }
 
-        /* !!! 修改重點：請假欄位文字顏色 !!!
-           原本 color: var(--accent-text);
-           改為 color: var(--primary); 
-           這樣即使在 Theme 3 等風格中，字也不會變白色 
-        */
+        /* !!! 修改重點：請假欄位文字顏色 (固定為 Primary Color) !!! */
         input.leave-inp { 
             width: 50px; 
             border: 1px solid var(--accent); 
-            color: var(--primary); /* 改用主色，確保所有背景下都清楚 */
+            color: var(--primary); 
             font-weight: bold; 
             background: var(--bg); 
         }
@@ -314,7 +302,7 @@
         if (theme !== 'default') document.body.classList.add(theme);
     }
 
-    // --- 1. API 假日處理 ---
+    // --- 1. API 假日處理 (修正：過濾普通週末) ---
     const holidaysCache = {}; 
     const CONFIG = { LUNCH_START: 12 * 60, LUNCH_END: 13 * 60, TARGET: 40 };
     let viewDate = new Date();
@@ -330,14 +318,17 @@
             
             const map = {};
             data.forEach(item => {
-                if (item.isHoliday) {
+                // ！！！關鍵修改！！！
+                // 必須過濾掉 category 為 "星期六、星期日" 的資料
+                // 這樣一來，只有「真正的國定假日」才會被存入 map
+                if (item.isHoliday && item.category !== '星期六、星期日') {
                     const dateStr = String(item.date); 
                     const md = `${dateStr.substring(4,6)}-${dateStr.substring(6,8)}`;
                     map[md] = item.description || "休假";
                 }
             });
             holidaysCache[year] = map;
-            console.log(`已下載 ${year} 年假日資料`);
+            console.log(`已下載 ${year} 年假日資料 (已過濾普通週末)`);
             return map;
         } catch (e) {
             console.error("無法抓取假日:", e);
@@ -600,6 +591,8 @@
             
             if(iso === today) div.classList.add('is-today');
 
+            // 修正後邏輯：
+            // hol 已經在 fetchHolidays 被過濾過了，現在如果 hol 有值，代表它絕對是國定假日
             if(hol) {
                 div.classList.add('is-holiday');
                 div.title = hol;
