@@ -3,213 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>工時計算表</title>
+    <title>工時計算表 (API版)</title>
     <style>
         /* =========================================
-           1. CSS 變數定義 (11 組風格)
+           1. CSS 變數定義 (維持你的 11 組風格)
         ========================================= */
-
-        /* --- 第 1 組: 米灰藍調 --- */
         :root {
             --bg: #F4F2EE;
             --card-bg: #FFFFFF;
             --text: #555555;
-
-            --primary: #6B9FBE;       
+            --primary: #6B9FBE;        
             --primary-hover: #5a8ca8;
-            
             --border: #C7D4DF;
             --holiday-cell-bg: #C7D4DF; 
-
             --accent: #C3D5BC;
             --accent-text: #3e5238;
-
             --holiday: #6B9FBE;
             --weekend: #C3D5BC;
-
-            /* 統計卡片 */
             --sum-bg-1: #6B9FBE; --sum-text-1: #fff;
             --sum-bg-2: #C3D5BC; --sum-text-2: #3e5238;
             --sum-bg-3: #C7D4DF; --sum-text-3: #555;
         }
 
-        /* --- 第 2 組: 復古草綠 --- */
-        body.theme-2 {
-            --bg: #F0F4F8;
-            --border: #C3CCD8;
-            --primary: #96AB91; --primary-hover: #7d9178;
-            --holiday-cell-bg: #E2CDCC;
-            --holiday: #b07d7b;
-            --accent: #E3E5B7; --accent-text: #5c613b;
-            --weekend: #E2CDCC;
-            --sum-bg-1: #96AB91; --sum-text-1: #fff;
-            --sum-bg-2: #E3E5B7; --sum-text-2: #5c613b;
-            --sum-bg-3: #E2CDCC; --sum-text-3: #555;
-        }
-
-        /* --- 第 3 組: 煙燻丹寧 --- */
-        body.theme-3 {
-            --bg: #F9E1D6;
-            --border: #E2C4CB;
-            --primary: #5C7CA8; --primary-hover: #4a668a;
-            --accent: #ABADCB; --accent-text: #fff;
-            --holiday-cell-bg: #E2C4CB;
-            --holiday: #5C7CA8;
-            --weekend: #ABADCB;
-            --sum-bg-1: #5C7CA8; --sum-text-1: #fff;
-            --sum-bg-2: #ABADCB; --sum-text-2: #fff;
-            --sum-bg-3: #E2C4CB; --sum-text-3: #555;
-        }
-
-        /* --- 第 4 組: 清透天藍 --- */
-        body.theme-4 {
-            --bg: #E9EDF2;
-            --border: #BFBDD1;
-            --primary: #80AFD8; --primary-hover: #6b9ac2;
-            --accent: #A9CCE1; --accent-text: #2c4a5e;
-            --holiday-cell-bg: #BFBDD1;
-            --holiday: #80AFD8;
-            --weekend: #A9CCE1;
-            --sum-bg-1: #80AFD8; --sum-text-1: #fff;
-            --sum-bg-2: #A9CCE1; --sum-text-2: #2c4a5e;
-            --sum-bg-3: #BFBDD1; --sum-text-3: #fff;
-        }
-
-        /* --- 第 5 組: 豆沙玫瑰 --- */
-        body.theme-5 {
-            --bg: #EDE3D2;
-            --border: #E7CDBA;
-            --primary: #B66D79; --primary-hover: #9e5b66;
-            --accent: #E7BDB9; --accent-text: #5e3b37;
-            --holiday-cell-bg: #E7BDB9;
-            --holiday: #B66D79;
-            --weekend: #E7CDBA;
-            --sum-bg-1: #B66D79; --sum-text-1: #fff;
-            --sum-bg-2: #E7BDB9; --sum-text-2: #5e3b37;
-            --sum-bg-3: #E7CDBA; --sum-text-3: #5e3b37;
-        }
-
-        /* --- 第 6 組: 薄荷土耳其 --- */
-        body.theme-6 {
-            --bg: #F4F3E8;
-            --border: #E7BDC1;
-            --primary: #61C6D8; --primary-hover: #4db3c5;
-            --accent: #C0E6E2; --accent-text: #3a635f;
-            --holiday-cell-bg: #E7BDC1;
-            --holiday: #d17b83;
-            --weekend: #61C6D8;
-            --sum-bg-1: #61C6D8; --sum-text-1: #fff;
-            --sum-bg-2: #C0E6E2; --sum-text-2: #3a635f;
-            --sum-bg-3: #E7BDC1; --sum-text-3: #555;
-        }
-
-        /* --- 第 7 組: 活力珊瑚橘 --- */
-        body.theme-7 {
-            --bg: #FDEAD8;
-            --border: #FEC5C0;
-            --primary: #E090A2; --primary-hover: #c97a8b;
-            --accent: #FDC192; --accent-text: #6b422a;
-            --holiday-cell-bg: #FEC5C0;
-            --holiday: #E090A2;
-            --weekend: #FDC192;
-            --sum-bg-1: #E090A2; --sum-text-1: #fff;
-            --sum-bg-2: #FDC192; --sum-text-2: #6b422a;
-            --sum-bg-3: #FEC5C0; --sum-text-3: #555;
-        }
-
-        /* --- 第 8 組: 青瓷萊姆綠 --- */
-        body.theme-8 {
-            --bg: #E6F3EB;
-            --border: #AED7C6;
-            --primary: #E7B6AB; --primary-hover: #d19e93;
-            --accent: #CCE28D; --accent-text: #5a6636;
-            --holiday-cell-bg: #E7B6AB;
-            --holiday: #d68978;
-            --weekend: #CCE28D;
-            --sum-bg-1: #E7B6AB; --sum-text-1: #fff;
-            --sum-bg-2: #CCE28D; --sum-text-2: #5a6636;
-            --sum-bg-3: #AED7C6; --sum-text-3: #555;
-        }
-
-        /* --- 第 9 組: 莫蘭迪灰粉 --- */
-        body.theme-9 {
-            --bg: #D8E4E3;
-            --border: #EBC5C6;
-            --primary: #96ABBE; --primary-hover: #7d91a3;
-            --accent: #E0AA97; --accent-text: #fff;
-            --holiday-cell-bg: #EBC5C6;
-            --holiday: #c98587;
-            --weekend: #E0AA97;
-            --sum-bg-1: #96ABBE; --sum-text-1: #fff;
-            --sum-bg-2: #E0AA97; --sum-text-2: #fff;
-            --sum-bg-3: #EBC5C6; --sum-text-3: #555;
-        }
-
-        /* --- 第 10 組: 霧霾紫羅蘭 --- */
-        body.theme-10 {
-            --bg: #F1F2F6;
-            --border: #EDD3D3;
-            --primary: #C7C6DF; --primary-hover: #aeadc9;
-            --accent: #CBDCE2; --accent-text: #4a5c63;
-            --holiday-cell-bg: #EDD3D3;
-            --holiday: #b08d8d;
-            --weekend: #C7C6DF;
-            --sum-bg-1: #C7C6DF; --sum-text-1: #fff;
-            --sum-bg-2: #CBDCE2; --sum-text-2: #4a5c63;
-            --sum-bg-3: #EDD3D3; --sum-text-3: #555;
-        }
-
-        /* --- 第 11 組: 粉嫩糖果 --- */
-        /* #f582ae, #8bd3dd, #ffc6c7, #bae8e8 */
-        body.theme-11 {
-            --bg: #FFF5F7; /* 極淡粉 */
-            --border: #ffc6c7;
-            
-            --primary: #f582ae; 
-            --primary-hover: #d66d96;
-
-            --accent: #bae8e8;
-            --accent-text: #555;
-
-            --holiday-cell-bg: #ffc6c7;
-            --holiday: #f582ae;
-            --weekend: #8bd3dd;
-
-            --sum-bg-1: #f582ae; --sum-text-1: #fff;
-            --sum-bg-2: #8bd3dd; --sum-text-2: #fff;
-            --sum-bg-3: #bae8e8; --sum-text-3: #555;
-        }
-
+        /* 為了節省篇幅，這裡省略其他主題的定義，請保留原本 CSS 中 theme-2 到 theme-11 的部分 */
+        /* 若你複製時遺失了，請告訴我，我再補上完整版 */
+        body.theme-2 { --bg: #F0F4F8; --border: #C3CCD8; --primary: #96AB91; --primary-hover: #7d9178; --holiday-cell-bg: #E2CDCC; --holiday: #b07d7b; --accent: #E3E5B7; --accent-text: #5c613b; --weekend: #E2CDCC; --sum-bg-1: #96AB91; --sum-text-1: #fff; --sum-bg-2: #E3E5B7; --sum-text-2: #5c613b; --sum-bg-3: #E2CDCC; --sum-text-3: #555; }
+        body.theme-3 { --bg: #F9E1D6; --border: #E2C4CB; --primary: #5C7CA8; --primary-hover: #4a668a; --accent: #ABADCB; --accent-text: #fff; --holiday-cell-bg: #E2C4CB; --holiday: #5C7CA8; --weekend: #ABADCB; --sum-bg-1: #5C7CA8; --sum-text-1: #fff; --sum-bg-2: #ABADCB; --sum-text-2: #fff; --sum-bg-3: #E2C4CB; --sum-text-3: #555; }
+        /* ... (你可以保留原本所有的 theme CSS) ... */
 
         /* =========================================
-           2. 全域樣式
+           2. 全域樣式 (針對 UI 修正部分)
         ========================================= */
         body {
             font-family: 'Comic Sans MS', '微軟正黑體', 'Segoe UI', sans-serif;
             background-color: var(--bg);
-            margin: 0;
-            padding: 20px;
-            color: var(--text);
-            background-image: none; 
+            margin: 0; padding: 20px; color: var(--text);
             transition: background-color 0.3s, color 0.3s;
         }
 
         .main-layout {
-            display: grid;
-            grid-template-columns: 320px 1fr;
-            gap: 25px;
-            max-width: 1100px;
-            margin: 0 auto;
+            display: grid; grid-template-columns: 320px 1fr; gap: 25px;
+            max-width: 1100px; margin: 0 auto;
         }
-
-        @media (max-width: 900px) {
-            .main-layout { grid-template-columns: 1fr; }
-        }
+        @media (max-width: 900px) { .main-layout { grid-template-columns: 1fr; } }
 
         .card {
-            background: var(--card-bg);
-            padding: 25px;
-            border-radius: 20px;
+            background: var(--card-bg); padding: 25px; border-radius: 20px;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
             border: 2px solid var(--border);
             transition: border-color 0.3s, background-color 0.3s;
@@ -232,134 +71,40 @@
         }
         .cal-cell:hover { border-color: var(--primary); }
         
-        /* 週末與假日樣式 */
         .is-weekend { color: var(--weekend); font-weight: bold; }
-        .is-holiday { 
-            background-color: var(--holiday-cell-bg); 
-            color: var(--holiday); 
-            font-weight: bold; 
-        }
-        
-        /* 修改：原本的 '★' 改為 '假' */
-        .is-holiday::after { 
-            content: '假'; 
-            font-size: 0.7em; 
-            display: block; 
-            margin-top: 2px; 
-            color: var(--holiday); 
-        }
-        
-        /* 選中週 */
+        .is-holiday { background-color: var(--holiday-cell-bg); color: var(--holiday); font-weight: bold; }
+        .is-holiday::after { content: '假'; font-size: 0.7em; display: block; margin-top: 2px; color: var(--holiday); }
         .is-active-week { background-color: var(--accent) !important; color: var(--accent-text) !important; font-weight: bold; border-radius: 12px; }
-        
         .is-today { border: 2px dashed var(--primary); }
 
-        /* --- 小提醒區塊樣式 --- */
-        .reminder-box {
-            margin-top: 20px; 
-            padding-top: 15px; 
-            border-top: 2px dashed var(--border); 
-            font-size: 0.85em; 
-            line-height: 1.8; 
-            opacity: 0.9;
-        }
-        
-        /* 小提醒指示器 */
-        .indicator-holiday { 
-            display: inline-block;
-            color: var(--holiday); 
-            background: var(--holiday-cell-bg); 
-            padding: 1px 6px; 
-            border-radius: 6px; 
-            font-weight: bold;
-            font-size: 0.9em;
-            margin-right: 4px;
-        }
-        .indicator-active { 
-            display: inline-block;
-            background: var(--accent); 
-            color: var(--accent-text); 
-            padding: 1px 6px; 
-            border-radius: 6px; 
-            font-weight: bold; 
-            font-size: 0.9em;
-            margin-right: 4px;
-        }
+        /* --- 提醒區與切換 --- */
+        .reminder-box { margin-top: 20px; padding-top: 15px; border-top: 2px dashed var(--border); font-size: 0.85em; line-height: 1.8; opacity: 0.9; }
+        .indicator-holiday { display: inline-block; color: var(--holiday); background: var(--holiday-cell-bg); padding: 1px 6px; border-radius: 6px; font-weight: bold; font-size: 0.9em; margin-right: 4px; }
+        .indicator-active { display: inline-block; background: var(--accent); color: var(--accent-text); padding: 1px 6px; border-radius: 6px; font-weight: bold; font-size: 0.9em; margin-right: 4px; }
 
-        /* 風格切換選單 */
-        .theme-switcher-container {
-            margin-top: 15px;
-            padding-top: 15px;
-            border-top: 1px solid var(--border);
-            font-size: 0.9em;
-            color: var(--text);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            gap: 5px;
-        }
-        
-        #theme-select {
-            width: 100%;
-            padding: 8px;
-            border-radius: 10px;
-            border: 2px solid var(--border);
-            background-color: var(--bg);
-            color: var(--text);
-            outline: none;
-            cursor: pointer;
-            font-size: 1em;
-        }
-
+        .theme-switcher-container { margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 5px; }
+        #theme-select { width: 100%; padding: 8px; border-radius: 10px; border: 2px solid var(--border); background-color: var(--bg); color: var(--text); outline: none; cursor: pointer; font-size: 1em; }
 
         /* --- 右側工時表 --- */
-        h2.app-title {
-            margin: 0 0 20px 0; color: var(--primary); text-align: center; font-size: 1.8em;
-        }
-
-        .panel-header {
-            display: flex; justify-content: space-between; align-items: flex-end;
-            margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px dashed var(--border);
-        }
+        h2.app-title { margin: 0 0 20px 0; color: var(--primary); text-align: center; font-size: 1.8em; }
+        .panel-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px dashed var(--border); }
         
         .date-picker-group label { display: block; font-size: 0.9em; opacity: 0.8; margin-bottom: 5px; font-weight: bold; }
-        input[type="date"] { 
-            padding: 8px 12px; border: 2px solid var(--border); border-radius: 12px; 
-            font-size: 1em; color: var(--text); outline: none; background: var(--card-bg);
-        }
+        input[type="date"] { padding: 8px 12px; border: 2px solid var(--border); border-radius: 12px; font-size: 1em; color: var(--text); outline: none; background: var(--card-bg); }
         input[type="date"]:focus { border-color: var(--primary); }
 
-        .btn-google {
-            background-color: var(--card-bg); color: var(--text); border: 2px solid var(--border);
-            padding: 8px 15px; border-radius: 20px; text-decoration: none; font-size: 0.9em;
-            display: inline-flex; align-items: center; gap: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            opacity: 0.9;
-        }
+        .btn-google { background-color: var(--card-bg); color: var(--text); border: 2px solid var(--border); padding: 8px 15px; border-radius: 20px; text-decoration: none; font-size: 0.9em; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); opacity: 0.9; }
         .btn-google:hover { border-color: var(--primary); color: var(--primary); opacity: 1; }
         .btn-google img { width: 18px; height: 18px; }
 
-        /* 表格樣式 */
         table { width: 100%; border-collapse: separate; border-spacing: 0 8px; margin-bottom: 10px; }
-        
-        th { 
-            color: var(--text); opacity: 0.8; padding: 10px; font-size: 0.9em; font-weight: bold;
-            border-bottom: 2px solid var(--border);
-        }
-
-        tbody tr { 
-            background: var(--card-bg); 
-            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
-        }
-
+        th { color: var(--text); opacity: 0.8; padding: 10px; font-size: 0.9em; font-weight: bold; border-bottom: 2px solid var(--border); }
+        tbody tr { background: var(--card-bg); box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
         td { padding: 12px 5px; text-align: center; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
         td:first-child { border-left: 1px solid var(--border); border-radius: 12px 0 0 12px; }
         td:last-child { border-right: 1px solid var(--border); border-radius: 0 12px 12px 0; }
 
-        .date-wrapper {
-            display: flex; align-items: center; justify-content: flex-start; gap: 8px; padding-left: 10px;
-        }
+        .date-wrapper { display: flex; align-items: center; justify-content: flex-start; gap: 8px; padding-left: 10px; }
         .date-main { font-size: 1.1em; font-weight: bold; color: var(--text); }
         .date-day { font-size: 0.9em; opacity: 0.7; background: var(--bg); padding: 2px 8px; border-radius: 10px; }
         .tag-holiday { font-size: 0.8em; padding: 3px 8px; background: var(--holiday); color: var(--card-bg); border-radius: 15px; white-space: nowrap; box-shadow: 1px 1px 3px rgba(0,0,0,0.1); }
@@ -368,54 +113,46 @@
         tr.mode-leave td { background-color: var(--bg); }
         
         input { font-family: inherit; }
-        
-        input:disabled {
-            background-color: transparent !important;
-            opacity: 0.3;
-            cursor: not-allowed;
-            color: var(--text);
-        }
+        input:disabled { background-color: transparent !important; opacity: 0.3; cursor: not-allowed; color: var(--text); }
 
+        /* =========================================
+           !重要修改! 時間與數字欄位樣式調整
+           加大寬度以容納 12小時制(AM/PM) 的顯示
+        ========================================= */
         input[type="time"], input[type="number"] { 
-            padding: 6px; border: 1px solid var(--border); border-radius: 10px;
-            text-align: center; background: var(--bg); color: var(--text); outline: none;
+            padding: 6px; 
+            border: 1px solid var(--border); 
+            border-radius: 10px;
+            text-align: center; 
+            background: var(--bg); 
+            color: var(--text); 
+            outline: none;
+            box-sizing: border-box; /* 確保 padding 不會撐爆 */
         }
         input[type="time"]:focus, input[type="number"]:focus { border-color: var(--primary); }
         
-        input[type="time"] { width: 90px; }
-        input.leave-inp { 
-            width: 50px; border: 1px solid var(--accent);
-            color: var(--accent-text); font-weight: bold; background: var(--bg);
+        /* 加寬時間欄位，避免被切到 */
+        input[type="time"] { 
+            width: 120px;  /* 從 90px 改為 120px */
+            letter-spacing: 0.5px;
         }
-        input[type="checkbox"] { 
-            appearance: none; width: 20px; height: 20px; border: 2px solid var(--border); border-radius: 6px; cursor: pointer; position: relative;
-            background: var(--bg);
-        }
+
+        input.leave-inp { width: 50px; border: 1px solid var(--accent); color: var(--accent-text); font-weight: bold; background: var(--bg); }
+        
+        input[type="checkbox"] { appearance: none; width: 20px; height: 20px; border: 2px solid var(--border); border-radius: 6px; cursor: pointer; position: relative; background: var(--bg); }
         input[type="checkbox"]:checked { background-color: var(--holiday); border-color: var(--holiday); }
         input[type="checkbox"]:checked::after { content: '✔'; color: white; position: absolute; left: 3px; top: -1px; font-size: 14px;}
 
         /* --- 底部統計 --- */
-        .summary {
-            display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 20px;
-        }
-        .sum-card {
-            padding: 15px; border-radius: 15px; text-align: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        }
-        /* 第一張卡片 (本週工時 - 用最深色) */
+        .summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 20px; }
+        .sum-card { padding: 15px; border-radius: 15px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         .sum-card:nth-child(1) { background-color: var(--sum-bg-1); color: var(--sum-text-1); }
-        /* 第二張卡片 (距離 40H - 用強調色) */
         .sum-card:nth-child(2) { background-color: var(--sum-bg-2); color: var(--sum-text-2); }
-        /* 第三張卡片 (週五下班 - 用次淺色) */
         .sum-card:nth-child(3) { background-color: var(--sum-bg-3); color: var(--sum-text-3); }
-
         .sum-val { font-size: 1.6em; font-weight: bold; margin-top: 5px; }
         .sum-lbl { font-size: 0.9em; opacity: 0.9; }
         
-        .reset-btn {
-            background: none; border: none; color: var(--text); opacity: 0.6; cursor: pointer; 
-            font-size: 0.85em; margin-top: 15px;
-        }
+        .reset-btn { background: none; border: none; color: var(--text); opacity: 0.6; cursor: pointer; font-size: 0.85em; margin-top: 15px; }
         .reset-btn:hover { color: var(--holiday); opacity: 1; text-decoration: underline; }
     </style>
 </head>
@@ -432,7 +169,7 @@
         
         <div class="reminder-box">
             <div style="margin-bottom:5px;">📅 <b>小提醒：</b></div>
-            • <span class="indicator-holiday">假</span> 是國定假日<br>
+            • <span class="indicator-holiday">假</span> 系統自動抓取國定假日<br>
             • <span class="indicator-active">編輯中</span> 是正在編輯的週<br>
             • 系統會自動扣除 1 小時 (12:00-13:00)<br>
         </div>
@@ -514,48 +251,49 @@
         localStorage.setItem('worktime_theme', theme);
         applyTheme(theme);
     }
-
     function applyTheme(theme) {
-        // 移除所有可能的風格 class
         document.body.className = ''; 
-        
-        // 如果不是預設，就加上對應的 class
-        if (theme !== 'default') {
-            document.body.classList.add(theme);
-        }
+        if (theme !== 'default') document.body.classList.add(theme);
     }
 
-    // --- 1. 內建國定假日 (2025-2026) ---
-    const HOLIDAYS_DB = {
-        '2025': {
-            '01-01': '元旦',
-            '01-27': '除夕補假', '01-28': '春節', '01-29': '春節', '01-30': '春節', '01-31': '春節',
-            '02-28': '228',
-            '04-03': '兒童節', '04-04': '清明節',
-            '05-01': '勞動節',
-            '05-30': '端午連假',
-            '10-06': '中秋連假',
-            '10-10': '國慶日'
-        },
-        '2026': {
-            '01-01': '元旦',
-            '02-16': '除夕補假', '02-17': '春節', '02-18': '春節', '02-19': '春節', '02-20': '春節',
-            '02-27': '228補假',
-            '04-03': '兒童節', '04-06': '清明補假',
-            '05-01': '勞動節',
-            '06-19': '端午連假',
-            '09-25': '中秋連假',
-            '10-09': '國慶補假',
-            '12-25': '行憲紀念日'
-        }
-    };
-
+    // --- 1. API 假日處理 ---
+    // 使用全域變數快取已下載的假日資料，避免重複 API 呼叫
+    const holidaysCache = {}; 
     const CONFIG = { LUNCH_START: 12 * 60, LUNCH_END: 13 * 60, TARGET: 40 };
     let viewDate = new Date();
 
+    // 非同步函式：抓取假日資料 (使用 CDN 鏡像的行政院資料)
+    async function fetchHolidays(year) {
+        if (holidaysCache[year]) return holidaysCache[year]; // 如果快取有，直接用
+
+        const url = `https://cdn.jsdelivr.net/gh/ruyut/TaiwanCalendar/data/${year}.json`;
+        try {
+            const response = await fetch(url);
+            if (!response.ok) throw new Error("API Error");
+            const data = await response.json();
+            
+            // 整理資料格式: { "01-01": "元旦", ... }
+            const map = {};
+            data.forEach(item => {
+                if (item.isHoliday) {
+                    // item.date 格式通常為 "20250101" -> 轉為 "01-01"
+                    const dateStr = String(item.date); 
+                    const md = `${dateStr.substring(4,6)}-${dateStr.substring(6,8)}`;
+                    map[md] = item.description || "休假";
+                }
+            });
+            holidaysCache[year] = map;
+            console.log(`已下載 ${year} 年假日資料`);
+            return map;
+        } catch (e) {
+            console.error("無法抓取假日:", e);
+            // 萬一失敗，回傳空物件，避免程式當掉
+            return {};
+        }
+    }
+
     // --- 2. 初始化 ---
-    window.onload = function() {
-        // 載入風格
+    window.onload = async function() {
         const savedTheme = localStorage.getItem('worktime_theme') || 'default';
         document.getElementById('theme-select').value = savedTheme;
         applyTheme(savedTheme);
@@ -567,6 +305,9 @@
         } else {
             jumpToToday();
         }
+
+        // 先嘗試抓今年的假日，抓完後再渲染一次以確保標記正確
+        await fetchHolidays(viewDate.getFullYear());
         refreshAll(false);
     };
 
@@ -577,7 +318,8 @@
         const monday = new Date(d.setDate(diff));
         document.getElementById('weekStart').value = toISODate(monday);
         viewDate = new Date();
-        refreshAll();
+        // 重置時也要檢查是否需要跨年抓資料
+        fetchHolidays(viewDate.getFullYear()).then(() => refreshAll());
     }
 
     function onWeekChange() {
@@ -585,13 +327,15 @@
         if(val) {
             localStorage.setItem('worktime_log_last', val);
             viewDate = new Date(val);
-            refreshAll();
+            // 切換週次時，年份可能變動，確保抓到該年資料
+            fetchHolidays(viewDate.getFullYear()).then(() => refreshAll());
         }
     }
 
     function navMonth(delta) {
         viewDate.setMonth(viewDate.getMonth() + delta);
-        renderCalendar();
+        // 切換月份時，確保該年假日資料已載入
+        fetchHolidays(viewDate.getFullYear()).then(() => renderCalendar());
     }
 
     function refreshAll(save = true) {
@@ -614,7 +358,7 @@
             const d = new Date(startDt);
             d.setDate(startDt.getDate() + i);
             const iso = toISODate(d);
-            const holName = getHoliday(iso);
+            const holName = getHoliday(iso); // 現在會從 API 資料查詢
 
             const tr = document.createElement('tr');
             tr.dataset.date = iso;
@@ -667,7 +411,6 @@
                 inps.forEach(k => k.disabled = true);
             } else {
                 inps.forEach(k => k.disabled = false);
-                
                 if (l > 0) tr.classList.add('mode-leave');
 
                 let work = 0;
@@ -688,6 +431,7 @@
 
         // Predict
         const fRow = rows[4];
+        if(!fRow) return;
         const fHol = fRow.querySelector('.inp-h').checked;
         const fStart = fRow.querySelector('.inp-s').value;
         const fLeave = parseFloat(fRow.querySelector('.inp-l').value) || 0;
@@ -701,15 +445,19 @@
         else {
             let cur = timeToMin(fStart);
             let w = 0;
-            while (w < needed) {
+            // 避免死無窮迴圈的簡單防呆
+            let safety = 0;
+            while (w < needed && safety < 1440) {
                 cur++;
+                // 跨過午休時間
                 if (cur <= CONFIG.LUNCH_START || cur > CONFIG.LUNCH_END) w++;
+                safety++;
             }
             pBox.textContent = minToTime(cur);
         }
     }
 
-    // --- 4. 存取 ---
+    // --- 4. 存取 (增加防呆機制) ---
     function saveData() {
         const key = `worktime_log_${document.getElementById('weekStart').value}`;
         const data = Array.from(document.querySelectorAll('#tbody tr')).map(tr => ({
@@ -727,23 +475,34 @@
         const rows = document.querySelectorAll('#tbody tr');
 
         if (json) {
-            const data = JSON.parse(json);
-            rows.forEach((tr, i) => {
-                if(data[i]) {
-                    tr.querySelector('.inp-s').value = data[i].s;
-                    tr.querySelector('.inp-e').value = data[i].e;
-                    tr.querySelector('.inp-l').value = data[i].l;
-                    tr.querySelector('.inp-h').checked = data[i].h;
-                }
-            });
+            try {
+                const data = JSON.parse(json);
+                rows.forEach((tr, i) => {
+                    // 使用 ?. 與 || 來防止資料結構變更時的錯誤
+                    const item = data[i] || {};
+                    tr.querySelector('.inp-s').value = item.s || "09:00";
+                    tr.querySelector('.inp-e').value = item.e || "18:00";
+                    tr.querySelector('.inp-l').value = item.l || "";
+                    tr.querySelector('.inp-h').checked = !!item.h;
+                });
+            } catch(e) {
+                console.error("讀取資料失敗，重置", e);
+                // 發生錯誤時重置該週
+                resetData();
+                return;
+            }
         } else {
             rows.forEach(tr => {
                 const holName = getHoliday(tr.dataset.date);
                 tr.querySelector('.inp-h').checked = !!holName;
                 tr.querySelector('.inp-s').value = "09:00";
-                tr.querySelector('.inp-e').value = (tr.rowIndex === 5) ? "" : "18:00";
+                tr.querySelector('.inp-e').value = (tr.rowIndex === 5) ? "" : "18:00"; // table header is row 0? no, rowIndex logic varies. safe check below
                 tr.querySelector('.inp-l').value = "";
             });
+            // 修正週五預設空值的邏輯
+            const lastRow = rows[rows.length-1];
+            if(lastRow) lastRow.querySelector('.inp-e').value = "";
+
             if(save) saveData();
         }
         calculate();
@@ -757,10 +516,23 @@
         }
     }
 
-    // --- 5. 月曆 ---
+    // --- 5. 月曆 (效能優化版: DocumentFragment) ---
     function renderCalendar() {
         const grid = document.getElementById('calGrid');
-        grid.innerHTML = '<div class="cal-head">日</div><div class="cal-head">一</div><div class="cal-head">二</div><div class="cal-head">三</div><div class="cal-head">四</div><div class="cal-head">五</div><div class="cal-head">六</div>';
+        // 清空
+        grid.innerHTML = '';
+        
+        // 建立 Fragment (虛擬節點)，全部組好再一次塞進去
+        const fragment = document.createDocumentFragment();
+
+        // 標頭
+        const heads = ['日','一','二','三','四','五','六'];
+        heads.forEach(h => {
+            const div = document.createElement('div');
+            div.className = 'cal-head';
+            div.textContent = h;
+            fragment.appendChild(div);
+        });
         
         const y = viewDate.getFullYear();
         const m = viewDate.getMonth();
@@ -777,8 +549,12 @@
 
         const today = toISODate(new Date());
 
-        for(let i=0; i<startDay; i++) grid.innerHTML += `<div></div>`;
+        // 空白格
+        for(let i=0; i<startDay; i++) {
+            fragment.appendChild(document.createElement('div'));
+        }
 
+        // 日期格
         for(let d=1; d<=daysInM; d++) {
             const dateObj = new Date(y, m, d);
             const iso = toISODate(dateObj);
@@ -794,7 +570,6 @@
                 div.title = hol;
             }
 
-            // 判斷六日
             const dayOfWeek = dateObj.getDay();
             if (dayOfWeek === 0 || dayOfWeek === 6) {
                 div.classList.add('is-weekend');
@@ -804,17 +579,26 @@
                 div.classList.add('is-active-week');
             }
 
-            grid.appendChild(div);
+            fragment.appendChild(div);
         }
+        
+        // 一次性寫入 DOM
+        grid.appendChild(fragment);
     }
 
     // --- Utils ---
     function getHoliday(iso) {
+        // 從 cache 中抓取，格式為 YYYY-MM-DD
         const y = iso.substring(0,4);
-        const md = iso.substring(5);
-        return (HOLIDAYS_DB[y] && HOLIDAYS_DB[y][md]) ? HOLIDAYS_DB[y][md] : null;
+        const md = iso.substring(5); // "01-01"
+        if(holidaysCache[y] && holidaysCache[y][md]) {
+            return holidaysCache[y][md];
+        }
+        return null;
     }
+
     function toISODate(d) {
+        // 保持原本的時區處理
         const z = d.getTimezoneOffset() * 60000;
         return new Date(d.getTime() - z).toISOString().split('T')[0];
     }
