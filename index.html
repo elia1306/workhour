@@ -3,23 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>工時計算表 (節日名稱版)</title>
+    <title>工時計算表 (版面固定版)</title>
     <style>
         /* =========================================
            1. CSS 變數定義 (11 組風格)
         ========================================= */
         :root {
-            --bg: #F4F2EE;
-            --card-bg: #FFFFFF;
-            --text: #555555;
-            --primary: #6B9FBE;        
-            --primary-hover: #5a8ca8;
-            --border: #C7D4DF;
-            --holiday-cell-bg: #C7D4DF; 
-            --accent: #C3D5BC;
-            --accent-text: #3e5238;
-            --holiday: #6B9FBE;
-            --weekend: #C3D5BC;
+            --bg: #F4F2EE; --card-bg: #FFFFFF; --text: #555555;
+            --primary: #6B9FBE; --primary-hover: #5a8ca8;
+            --border: #C7D4DF; --holiday-cell-bg: #C7D4DF; 
+            --accent: #C3D5BC; --accent-text: #3e5238;
+            --holiday: #6B9FBE; --weekend: #C3D5BC;
             --sum-bg-1: #6B9FBE; --sum-text-1: #fff;
             --sum-bg-2: #C3D5BC; --sum-text-2: #3e5238;
             --sum-bg-3: #C7D4DF; --sum-text-3: #555;
@@ -83,10 +77,13 @@
         .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; text-align: center; }
         .cal-head { font-size: 0.85em; opacity: 0.7; padding-bottom: 5px; font-weight: bold;}
         
-        /* 修改：月曆格子改用 Flex 佈局，方便垂直排列日期與節日名稱 */
+        /* !!! 修改重點：固定日曆格子大小 !!!
+           設定 height 為固定值，並 overflow: hidden
+           這樣無論內容多長，都不會撐開版面
+        */
         .cal-cell { 
-            padding: 8px 2px; 
-            min-height: 40px; /* 增加一點高度容納文字 */
+            height: 48px; /* 強制固定高度 */
+            padding: 4px 2px;
             font-size: 0.9em; 
             border-radius: 12px; 
             position: relative; 
@@ -97,24 +94,27 @@
             align-items: center;
             justify-content: center;
             gap: 2px;
+            overflow: hidden; /* 超出範圍隱藏 */
+            box-sizing: border-box;
         }
         .cal-cell:hover { border-color: var(--primary); }
         
         /* 節日名稱樣式 */
         .cal-holiday-name {
-            font-size: 0.65em;
+            font-size: 0.65em; /* 字體再小一點點，避免擁擠 */
             color: var(--holiday);
             font-weight: bold;
-            line-height: 1.1;
-            max-width: 100%;
+            line-height: 1;
+            width: 100%;
+            text-align: center;
             overflow: hidden;
             white-space: nowrap;
-            text-overflow: ellipsis; /* 太長顯示... */
+            text-overflow: ellipsis; 
+            padding: 0 1px;
         }
 
         .is-weekend { color: var(--weekend); font-weight: bold; }
         
-        /* is-holiday 負責背景色，不再負責顯示 "假" */
         .is-holiday { 
             background-color: var(--holiday-cell-bg); 
             color: var(--holiday); 
@@ -324,7 +324,6 @@
             
             const map = {};
             data.forEach(item => {
-                // 檢查 description 是否有值，並過濾純週末
                 if (item.isHoliday && item.description && item.description.trim() !== '') {
                     const dateStr = String(item.date); 
                     const md = `${dateStr.substring(4,6)}-${dateStr.substring(6,8)}`;
@@ -343,6 +342,12 @@
     // --- 輔助函式：簡化過長的節日名稱 ---
     function simplifyName(name) {
         if(!name) return "";
+        
+        // 特殊需求：指定日期名稱優化
+        if(name.includes("孔子") || name.includes("教師")) return "教師節";
+        if(name.includes("光復")) return "光復節";
+
+        // 一般簡稱
         if(name.includes("開國紀念日")) return "元旦";
         if(name.includes("和平紀念日")) return "228";
         if(name.includes("國慶")) return "國慶";
@@ -354,7 +359,7 @@
         if(name.includes("兒童")) return "兒童節";
         if(name.includes("勞動")) return "勞動節";
         if(name.includes("補假")) return "補假";
-        // 如果沒有特別對應，就回傳原名 (CSS 會處理過長的部分)
+        
         return name;
     }
 
@@ -421,7 +426,6 @@
             d.setDate(startDt.getDate() + i);
             const iso = toISODate(d);
             const holName = getHoliday(iso); 
-            // 表格內如果名稱太長，也可以稍微簡化，或保留全名
             const displayHol = simplifyName(holName);
 
             const tr = document.createElement('tr');
@@ -612,7 +616,6 @@
             const div = document.createElement('div');
             div.className = 'cal-cell';
             
-            // 建立日期數字 DOM
             const dayNumSpan = document.createElement('span');
             dayNumSpan.textContent = d;
             dayNumSpan.style.fontSize = '1.1em';
@@ -620,13 +623,9 @@
             
             if(iso === today) div.classList.add('is-today');
 
-            // 修正後邏輯：
-            // 如果有假日名稱，才顯示背景色與名稱
             if(hol) {
                 div.classList.add('is-holiday');
                 div.title = hol;
-
-                // 插入節日名稱 DOM
                 const nameDiv = document.createElement('div');
                 nameDiv.className = 'cal-holiday-name';
                 nameDiv.textContent = simplifyName(hol);
