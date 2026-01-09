@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>工時計算表 (最終精修版)</title>
+    <title>工時計算表 (寬版舒適版)</title>
     <style>
         /* =========================================
            1. CSS 變數定義 (11 組風格)
@@ -53,10 +53,14 @@
         }
 
         .main-layout {
-            display: grid; grid-template-columns: 320px 1fr; gap: 25px;
-            max-width: 1100px; margin: 0 auto;
+            display: grid; 
+            /* 修改重點：左側寬度從 320px 增加到 400px，讓格子變寬 */
+            grid-template-columns: 400px 1fr; 
+            gap: 25px;
+            max-width: 1200px; /* 總寬度稍微加大，配合左側變寬 */
+            margin: 0 auto;
         }
-        @media (max-width: 900px) { .main-layout { grid-template-columns: 1fr; } }
+        @media (max-width: 950px) { .main-layout { grid-template-columns: 1fr; } }
 
         .card {
             background: var(--card-bg); padding: 25px; border-radius: 20px;
@@ -77,8 +81,9 @@
         .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; text-align: center; }
         .cal-head { font-size: 0.85em; opacity: 0.7; padding-bottom: 5px; font-weight: bold;}
         
+        /* 修改重點：固定高度加高至 54px */
         .cal-cell { 
-            height: 48px; /* 固定高度 */
+            height: 54px; 
             padding: 4px 2px;
             font-size: 0.9em; 
             border-radius: 12px; 
@@ -95,9 +100,9 @@
         }
         .cal-cell:hover { border-color: var(--primary); }
         
-        /* 節日名稱樣式優化 */
+        /* 修改重點：字體改回 12px */
         .cal-holiday-name {
-            font-size: 10px; /* 設定特定大小，確保3個字能塞入 */
+            font-size: 12px; 
             color: var(--holiday);
             font-weight: bold;
             line-height: 1.2;
@@ -105,7 +110,7 @@
             text-align: center;
             overflow: hidden;
             white-space: nowrap;
-            text-overflow: ellipsis; /* 超過寬度顯示 ... */
+            text-overflow: ellipsis; 
             padding: 0 1px;
         }
 
@@ -178,7 +183,7 @@
             font-size: 0.95em; 
         }
 
-        /* !!! 修改重點：請假欄位文字顏色 (固定為 var(--text)) !!! */
+        /* 請假欄位 */
         input.leave-inp { 
             width: 50px; 
             border: 1px solid var(--accent); 
