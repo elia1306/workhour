@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>工時計算表 (最終完美版)</title>
+    <title>工時計算表 (終極修正版)</title>
     <style>
         /* =========================================
            1. CSS 變數定義 (11 組風格)
@@ -30,7 +30,7 @@
         body.theme-3 { --bg: #F9E1D6; --border: #E2C4CB; --primary: #5C7CA8; --primary-hover: #4a668a; --accent: #ABADCB; --accent-text: #fff; --holiday-cell-bg: #E2C4CB; --holiday: #5C7CA8; --weekend: #ABADCB; --sum-bg-1: #5C7CA8; --sum-text-1: #fff; --sum-bg-2: #ABADCB; --sum-text-2: #fff; --sum-bg-3: #E2C4CB; --sum-text-3: #555; }
         body.theme-4 { --bg: #E9EDF2; --border: #BFBDD1; --primary: #80AFD8; --primary-hover: #6b9ac2; --accent: #A9CCE1; --accent-text: #2c4a5e; --holiday-cell-bg: #BFBDD1; --holiday: #80AFD8; --weekend: #A9CCE1; --sum-bg-1: #80AFD8; --sum-text-1: #fff; --sum-bg-2: #A9CCE1; --sum-text-2: #2c4a5e; --sum-bg-3: #BFBDD1; --sum-text-3: #fff; }
         
-        /* Theme 5 豆沙玫瑰 (已優化配色) */
+        /* Theme 5 豆沙玫瑰 (已優化配色：週末深色、編輯週淡色) */
         body.theme-5 {
             --bg: #EDE3D2;
             --border: #E7CDBA;
@@ -302,7 +302,7 @@
         if (theme !== 'default') document.body.classList.add(theme);
     }
 
-    // --- 1. API 假日處理 (修正：過濾普通週末) ---
+    // --- 1. API 假日處理 (修正：嚴格過濾無名稱的週末) ---
     const holidaysCache = {}; 
     const CONFIG = { LUNCH_START: 12 * 60, LUNCH_END: 13 * 60, TARGET: 40 };
     let viewDate = new Date();
@@ -318,13 +318,14 @@
             
             const map = {};
             data.forEach(item => {
-                // ！！！關鍵修改！！！
-                // 必須過濾掉 category 為 "星期六、星期日" 的資料
-                // 這樣一來，只有「真正的國定假日」才會被存入 map
-                if (item.isHoliday && item.category !== '星期六、星期日') {
+                // ！！！終極修正！！！
+                // 不依賴 category 字串比對，改為檢查 description (節日名稱)。
+                // 如果 description 是空字串 ""，代表它只是一個普通週末，不是國定假日。
+                // 只有 description 有內容 (例如 "元旦", "春節") 才視為假日。
+                if (item.isHoliday && item.description && item.description.trim() !== '') {
                     const dateStr = String(item.date); 
                     const md = `${dateStr.substring(4,6)}-${dateStr.substring(6,8)}`;
-                    map[md] = item.description || "休假";
+                    map[md] = item.description;
                 }
             });
             holidaysCache[year] = map;
@@ -592,7 +593,8 @@
             if(iso === today) div.classList.add('is-today');
 
             // 修正後邏輯：
-            // hol 已經在 fetchHolidays 被過濾過了，現在如果 hol 有值，代表它絕對是國定假日
+            // hol 已經在 fetchHolidays 被嚴格過濾了。
+            // 現在如果 hol 有值 (例如 "元旦")，它才會有 is-holiday class，也才會顯示 "假"
             if(hol) {
                 div.classList.add('is-holiday');
                 div.title = hol;
