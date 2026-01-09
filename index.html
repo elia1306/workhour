@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>工時計算表 (版面固定版)</title>
+    <title>工時計算表 (最終精修版)</title>
     <style>
         /* =========================================
            1. CSS 變數定義 (11 組風格)
@@ -77,12 +77,8 @@
         .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; text-align: center; }
         .cal-head { font-size: 0.85em; opacity: 0.7; padding-bottom: 5px; font-weight: bold;}
         
-        /* !!! 修改重點：固定日曆格子大小 !!!
-           設定 height 為固定值，並 overflow: hidden
-           這樣無論內容多長，都不會撐開版面
-        */
         .cal-cell { 
-            height: 48px; /* 強制固定高度 */
+            height: 48px; /* 固定高度 */
             padding: 4px 2px;
             font-size: 0.9em; 
             border-radius: 12px; 
@@ -94,22 +90,22 @@
             align-items: center;
             justify-content: center;
             gap: 2px;
-            overflow: hidden; /* 超出範圍隱藏 */
+            overflow: hidden; 
             box-sizing: border-box;
         }
         .cal-cell:hover { border-color: var(--primary); }
         
-        /* 節日名稱樣式 */
+        /* 節日名稱樣式優化 */
         .cal-holiday-name {
-            font-size: 0.65em; /* 字體再小一點點，避免擁擠 */
+            font-size: 10px; /* 設定特定大小，確保3個字能塞入 */
             color: var(--holiday);
             font-weight: bold;
-            line-height: 1;
+            line-height: 1.2;
             width: 100%;
             text-align: center;
             overflow: hidden;
             white-space: nowrap;
-            text-overflow: ellipsis; 
+            text-overflow: ellipsis; /* 超過寬度顯示 ... */
             padding: 0 1px;
         }
 
@@ -182,11 +178,11 @@
             font-size: 0.95em; 
         }
 
-        /* 請假欄位 */
+        /* !!! 修改重點：請假欄位文字顏色 (固定為 var(--text)) !!! */
         input.leave-inp { 
             width: 50px; 
             border: 1px solid var(--accent); 
-            color: var(--primary); 
+            color: var(--text); /* 與當天工時顏色一致 */
             font-weight: bold; 
             background: var(--bg); 
         }
@@ -343,11 +339,9 @@
     function simplifyName(name) {
         if(!name) return "";
         
-        // 特殊需求：指定日期名稱優化
         if(name.includes("孔子") || name.includes("教師")) return "教師節";
         if(name.includes("光復")) return "光復節";
 
-        // 一般簡稱
         if(name.includes("開國紀念日")) return "元旦";
         if(name.includes("和平紀念日")) return "228";
         if(name.includes("國慶")) return "國慶";
