@@ -54,10 +54,9 @@
 
         .main-layout {
             display: grid; 
-            /* 修改重點：左側寬度從 320px 增加到 400px，讓格子變寬 */
             grid-template-columns: 400px 1fr; 
             gap: 25px;
-            max-width: 1200px; /* 總寬度稍微加大，配合左側變寬 */
+            max-width: 1200px;
             margin: 0 auto;
         }
         @media (max-width: 950px) { .main-layout { grid-template-columns: 1fr; } }
@@ -81,7 +80,6 @@
         .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; text-align: center; }
         .cal-head { font-size: 0.85em; opacity: 0.7; padding-bottom: 5px; font-weight: bold;}
         
-        /* 修改重點：固定高度加高至 54px */
         .cal-cell { 
             height: 54px; 
             padding: 4px 2px;
@@ -100,7 +98,6 @@
         }
         .cal-cell:hover { border-color: var(--primary); }
         
-        /* 修改重點：字體改回 12px */
         .cal-holiday-name {
             font-size: 12px; 
             color: var(--holiday);
@@ -163,9 +160,6 @@
         input { font-family: inherit; }
         input:disabled { background-color: transparent !important; opacity: 0.3; cursor: not-allowed; color: var(--text); }
 
-        /* =========================================
-           !重要修改! 
-        ========================================= */
         input[type="time"], input[type="number"] { 
             padding: 6px 2px;
             border: 1px solid var(--border); 
@@ -187,7 +181,7 @@
         input.leave-inp { 
             width: 50px; 
             border: 1px solid var(--accent); 
-            color: var(--text); /* 與當天工時顏色一致 */
+            color: var(--text);
             font-weight: bold; 
             background: var(--bg); 
         }
@@ -202,7 +196,9 @@
         .sum-card:nth-child(1) { background-color: var(--sum-bg-1); color: var(--sum-text-1); }
         .sum-card:nth-child(2) { background-color: var(--sum-bg-2); color: var(--sum-text-2); }
         .sum-card:nth-child(3) { background-color: var(--sum-bg-3); color: var(--sum-text-3); }
-        .sum-val { font-size: 1.6em; font-weight: bold; margin-top: 5px; }
+        
+        /* 修改重點：字體稍微縮小以容納中文時分 */
+        .sum-val { font-size: 1.4em; font-weight: bold; margin-top: 5px; white-space: nowrap; }
         .sum-lbl { font-size: 0.9em; opacity: 0.9; }
         
         .reset-btn { background: none; border: none; color: var(--text); opacity: 0.6; cursor: pointer; font-size: 0.85em; margin-top: 15px; }
@@ -280,11 +276,11 @@
         <div class="summary">
             <div class="sum-card">
                 <div class="sum-lbl">本週工時</div>
-                <div class="sum-val" id="sumTotal">0.00</div>
+                <div class="sum-val" id="sumTotal">0時 0分</div>
             </div>
             <div class="sum-card">
                 <div class="sum-lbl">距離 40H</div>
-                <div class="sum-val" id="sumLeft">0.00</div>
+                <div class="sum-val" id="sumLeft">0時 0分</div>
             </div>
             <div class="sum-card">
                 <div class="sum-lbl">週五下班</div>
@@ -491,9 +487,18 @@
             if (idx < 4) preFri += dayMins;
         });
 
-        document.getElementById('sumTotal').textContent = (total/60).toFixed(2);
+        // =========================================
+        // 修改重點：改成 X時 X分
+        // =========================================
+        let tH = Math.floor(total / 60);
+        let tM = Math.round(total % 60);
+        document.getElementById('sumTotal').textContent = `${tH}時 ${tM}分`;
+
         const left = Math.max(0, CONFIG.TARGET * 60 - total);
-        document.getElementById('sumLeft').textContent = (left/60).toFixed(2);
+        let lH = Math.floor(left / 60);
+        let lM = Math.round(left % 60);
+        document.getElementById('sumLeft').textContent = `${lH}時 ${lM}分`;
+        // =========================================
 
         const fRow = rows[4];
         if(!fRow) return;
