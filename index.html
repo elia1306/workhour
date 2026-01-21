@@ -197,7 +197,6 @@
         .sum-card:nth-child(2) { background-color: var(--sum-bg-2); color: var(--sum-text-2); }
         .sum-card:nth-child(3) { background-color: var(--sum-bg-3); color: var(--sum-text-3); }
         
-        /* 修改重點：字體稍微縮小以容納中文時分 */
         .sum-val { font-size: 1.4em; font-weight: bold; margin-top: 5px; white-space: nowrap; }
         .sum-lbl { font-size: 0.9em; opacity: 0.9; }
         
@@ -487,17 +486,25 @@
             if (idx < 4) preFri += dayMins;
         });
 
-        // =========================================
-        // 修改重點：改成 X時 X分
-        // =========================================
+        // 顯示總工時 (X時 X分)
         let tH = Math.floor(total / 60);
         let tM = Math.round(total % 60);
         document.getElementById('sumTotal').textContent = `${tH}時 ${tM}分`;
 
-        const left = Math.max(0, CONFIG.TARGET * 60 - total);
-        let lH = Math.floor(left / 60);
-        let lM = Math.round(left % 60);
-        document.getElementById('sumLeft').textContent = `${lH}時 ${lM}分`;
+        // =========================================
+        // 修改重點：允許顯示負數 (距離 40H)
+        // =========================================
+        const left = CONFIG.TARGET * 60 - total; // 移除 Math.max(0, ...)
+        
+        // 判斷是否為負數，是的話要顯示「-」
+        const sign = left < 0 ? "-" : "";
+        
+        // 取絕對值來計算時與分，避免顯示「-1時 -30分」這種怪格式
+        const absLeft = Math.abs(left);
+        let lH = Math.floor(absLeft / 60);
+        let lM = Math.round(absLeft % 60);
+        
+        document.getElementById('sumLeft').textContent = `${sign}${lH}時 ${lM}分`;
         // =========================================
 
         const fRow = rows[4];
